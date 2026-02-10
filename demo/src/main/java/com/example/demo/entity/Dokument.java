@@ -7,32 +7,39 @@ import jakarta.persistence.*;
 public class Dokument {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_dokument")
     private Integer idDokument;
 
-    private String naziv_dokumenta;
+    @Column(name = "naziv_dokumenta")
+    private String nazivDokumenta;
 
     @ManyToOne
-    @JoinColumn(name = "OSOBNI_PODACI_OIB")
+    @JoinColumn(name = "osobni_podaci_oib")
     private OsobniPodaci osobniPodaci;
 
     @ManyToOne
-    @JoinColumn(name = "FILES_BLOB_idFilesBlob")
+    @JoinColumn(name = "files_blob_id_files_blob")
     private FilesBlob filesBlob;
 
     @ManyToOne
-    @JoinColumn(name = "VRSTA_DOKUMENTA_idVrstaDokumenta")
+    @JoinColumn(name = "vrsta_dokumenta_id_vrsta_dokumenta")
     private VrstaDokumenta vrstaDokumenta;
 
     public Dokument() {}
 
     public Integer getIdDokument() { return idDokument; }
     public void setIdDokument(Integer idDokument) { this.idDokument = idDokument; }
-    public String getNaziv_dokumenta() { return naziv_dokumenta; }
-    public void setNaziv_dokumenta(String naziv_dokumenta) { this.naziv_dokumenta = naziv_dokumenta; }
+
+    public String getNazivDokumenta() { return nazivDokumenta; }
+    public void setNazivDokumenta(String nazivDokumenta) { this.nazivDokumenta = nazivDokumenta; }
+
     public OsobniPodaci getOsobniPodaci() { return osobniPodaci; }
     public void setOsobniPodaci(OsobniPodaci osobniPodaci) { this.osobniPodaci = osobniPodaci; }
+
     public FilesBlob getFilesBlob() { return filesBlob; }
     public void setFilesBlob(FilesBlob filesBlob) { this.filesBlob = filesBlob; }
+
     public VrstaDokumenta getVrstaDokumenta() { return vrstaDokumenta; }
     public void setVrstaDokumenta(VrstaDokumenta vrstaDokumenta) { this.vrstaDokumenta = vrstaDokumenta; }
 }

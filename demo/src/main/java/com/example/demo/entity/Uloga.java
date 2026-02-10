@@ -2,6 +2,8 @@ package com.example.demo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -10,16 +12,17 @@ import jakarta.persistence.Table;
 public class Uloga {
 
     @Id
-    @Column(name = "idULOGA")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "iduloga")
     private Integer idUloga;
     
+    @Column(name = "naziv_uloge")
     private String naziv_uloge;
 
-    
     public Uloga() {
     }
 
-    public int getIdUloga() {
+    public Integer getIdUloga() {
         return idUloga;
     }
 

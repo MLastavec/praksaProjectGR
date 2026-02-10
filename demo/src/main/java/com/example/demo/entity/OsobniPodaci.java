@@ -7,21 +7,36 @@ import java.time.LocalDate;
 public class OsobniPodaci {
 
     @Id
+    @Column(name = "oib")
     private String oib;
 
+    @Column(name = "ime")
     private String ime;
+
+    @Column(name = "prezime")
     private String prezime;
     
+    @Column(name = "datum_rodenja")
     private LocalDate datum_rodenja;
+
+    @Column(name = "adresa")
     private String adresa;
+
+    @Column(name = "broj_telefona")
     private String broj_telefona;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "korisnicko_ime")
     private String korisnicko_ime;
+
+    @Column(name = "lozinka")
     private String lozinka;
 
     
     @ManyToOne
-    @JoinColumn(name = "ULOGA_idULOGA")
+    @JoinColumn(name = "uloga_iduloga")
     private Uloga uloga;
 
     public OsobniPodaci() {}

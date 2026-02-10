@@ -7,7 +7,8 @@ import jakarta.persistence.*;
 public class FilesBlob {
 
     @Id
-    @Column(name = "idFilesBlob")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_files_blob")
     private Integer idFilesBlob;
 
     @Lob

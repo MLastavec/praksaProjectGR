@@ -8,11 +8,17 @@ import java.time.LocalDate;
 public class VrstaDokumenta {
 
     @Id
-    @Column(name = "idVrstaDokumenta")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_vrsta_dokumenta")
     private Integer idVrstaDokumenta;
 
+    @Column(name = "vrsta_dokumenta")
     private String vrsta_dokumenta;
+
+    @Column(name = "datum_kreiranja")
     private LocalDate datum_kreiranja;
+
+    @Column(name = "kreirao")
     private String kreirao;
 
     public VrstaDokumenta() {}
