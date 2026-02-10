@@ -11,7 +11,7 @@ public class Uloga {
 
     @Id
     @Column(name = "idULOGA")
-    private int idUloga;
+    private Integer idUloga;
     
     private String naziv_uloge;
 
