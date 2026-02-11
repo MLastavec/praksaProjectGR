@@ -12,11 +12,11 @@ public class UlogaService {
     @Autowired
     private UlogaRepository ulogaRepository;
 
-    public List<Uloga> findAll() {
+    public List<Uloga> getAll() {
         return ulogaRepository.findAll();
     }
 
-    public Uloga save(Uloga uloga) {
-        return ulogaRepository.save(uloga);
+    public Uloga getByIdUloga  (Integer id) {
+        return ulogaRepository.findById(id).orElse(null);
     }
 }

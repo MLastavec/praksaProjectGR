@@ -1,6 +1,12 @@
 package com.example.demo.entity; 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "osobni_podaci")
@@ -34,10 +40,17 @@ public class OsobniPodaci {
     @Column(name = "lozinka")
     private String lozinka;
 
-    
+    @CreationTimestamp
+    @Column(name = "datum_kreiranja", updatable = false, nullable = false)
+    private LocalDateTime datumKreiranja;
+
     @ManyToOne
     @JoinColumn(name = "uloga_iduloga")
     private Uloga uloga;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "osobniPodaci", fetch = FetchType.EAGER)
+    private List<Dokument> dokumenti;
 
     public OsobniPodaci() {}
 
@@ -71,4 +84,8 @@ public class OsobniPodaci {
 
     public Uloga getUloga() { return uloga; }
     public void setUloga(Uloga uloga) { this.uloga = uloga; }
+
+    public List<Dokument> getDokumenti() { return dokumenti; }
+    public void setDokumenti(List<Dokument> dokumenti) { this.dokumenti = dokumenti; }
 }
+

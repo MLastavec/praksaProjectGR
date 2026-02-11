@@ -12,11 +12,11 @@ public class DokumentService {
     @Autowired
     private DokumentRepository dokumentRepository;
 
-    public List<Dokument> findAll() {
+    public List<Dokument> getAll() {
         return dokumentRepository.findAll();
     }
 
-    public Dokument save(Dokument dokument) {
-        return dokumentRepository.save(dokument);
+    public Dokument getById(Integer id) {
+        return dokumentRepository.findById(id).orElse(null);
     }
 }

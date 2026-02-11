@@ -1,5 +1,9 @@
 package com.example.demo.entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +18,10 @@ public class FilesBlob {
     @Lob
     @Column(name = "dokument", columnDefinition="LONGBLOB")
     private byte[] dokument;
+
+    @CreationTimestamp
+    @Column(name = "datum_kreiranja", updatable = false, nullable = false)
+    private LocalDateTime datumKreiranja;
 
     public FilesBlob() {}
     

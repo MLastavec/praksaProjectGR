@@ -3,6 +3,8 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Entity
 @Table(name = "vrsta_dokumenta")
 public class VrstaDokumenta {
@@ -15,6 +17,7 @@ public class VrstaDokumenta {
     @Column(name = "vrsta_dokumenta")
     private String vrsta_dokumenta;
 
+    @CreationTimestamp
     @Column(name = "datum_kreiranja")
     private LocalDate datum_kreiranja;
 

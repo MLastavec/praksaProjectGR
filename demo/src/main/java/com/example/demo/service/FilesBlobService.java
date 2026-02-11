@@ -11,11 +11,11 @@ public class FilesBlobService {
     @Autowired
     private FilesBlobRepository filesBlobRepository;
 
-    public List<FilesBlob> getAllFilesBlob() {
+    public List<FilesBlob> getAll() {
         return filesBlobRepository.findAll();
     }
 
-    public FilesBlob saveFilesBlob(FilesBlob filesBlob) {
-        return filesBlobRepository.save(filesBlob);
+    public FilesBlob getById(Integer id) {
+        return filesBlobRepository.findById(id).orElse(null);
     }
 }

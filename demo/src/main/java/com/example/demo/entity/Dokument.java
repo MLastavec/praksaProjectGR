@@ -1,5 +1,11 @@
 package com.example.demo.entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +20,11 @@ public class Dokument {
     @Column(name = "naziv_dokumenta")
     private String nazivDokumenta;
 
+    @CreationTimestamp
+    @Column(name = "datum_kreiranja", updatable = false, nullable = false)
+    private LocalDateTime datumKreiranja;
+
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "osobni_podaci_oib")
     private OsobniPodaci osobniPodaci;
@@ -42,4 +53,9 @@ public class Dokument {
 
     public VrstaDokumenta getVrstaDokumenta() { return vrstaDokumenta; }
     public void setVrstaDokumenta(VrstaDokumenta vrstaDokumenta) { this.vrstaDokumenta = vrstaDokumenta; }
+
+    public Dokument orElse(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElse'");
+    }
 }

@@ -8,14 +8,18 @@ import java.util.List;
 
 @Service
 public class OsobniPodaciService {
+
     @Autowired
     private OsobniPodaciRepository osobniPodaciRepository;
 
-    public List<OsobniPodaci> getAllOsobniPodaci() {
+    public List<OsobniPodaci> getAll() {
         return osobniPodaciRepository.findAll();
     }
 
-    public OsobniPodaci saveOsobniPodaci(OsobniPodaci osobniPodaci) {
-        return osobniPodaciRepository.save(osobniPodaci);
+     
+    public OsobniPodaci getById(String id) {
+        return osobniPodaciRepository.findById(id).orElse(null);
     }
+
+
 }

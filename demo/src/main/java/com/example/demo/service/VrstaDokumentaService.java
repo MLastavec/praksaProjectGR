@@ -11,11 +11,11 @@ public class VrstaDokumentaService {
     @Autowired
     private VrstaDokumentaRepository vrstaDokumentaRepository;
 
-    public List<VrstaDokumenta> findAll() {
+    public List<VrstaDokumenta> getAll() {
         return vrstaDokumentaRepository.findAll();
     }
 
-    public VrstaDokumenta save(VrstaDokumenta vrstaDokumenta) {
-        return vrstaDokumentaRepository.save(vrstaDokumenta);
+    public VrstaDokumenta getById(Integer id) {
+        return vrstaDokumentaRepository.findById(id).orElse(null);
     }
 }
