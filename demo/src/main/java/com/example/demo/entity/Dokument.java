@@ -54,8 +54,6 @@ public class Dokument {
     public VrstaDokumenta getVrstaDokumenta() { return vrstaDokumenta; }
     public void setVrstaDokumenta(VrstaDokumenta vrstaDokumenta) { this.vrstaDokumenta = vrstaDokumenta; }
 
-    public Dokument orElse(Object object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'orElse'");
-    }
+    public LocalDateTime getDatumKreiranja() { return datumKreiranja; }
+    
 }

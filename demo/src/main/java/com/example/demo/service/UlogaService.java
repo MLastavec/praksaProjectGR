@@ -17,6 +17,11 @@ public class UlogaService {
     }
 
     public Uloga getByIdUloga  (Integer id) {
-        return ulogaRepository.findById(id).orElse(null);
+       return ulogaRepository.findById(id)
+            .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.NOT_FOUND, 
+                "Uloga s ID-em " + id + " nije definirana u sustavu!"
+            ));
     }
+
 }

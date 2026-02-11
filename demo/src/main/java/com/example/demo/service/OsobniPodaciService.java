@@ -17,9 +17,24 @@ public class OsobniPodaciService {
     }
 
      
-    public OsobniPodaci getById(String id) {
-        return osobniPodaciRepository.findById(id).orElse(null);
+    public OsobniPodaci getById(String oib) {
+        return osobniPodaciRepository.findById(oib)
+            .orElseThrow(() -> new RuntimeException("Greška: Podaci za OIB " + oib + " ne postoje u sustavu!"));
     }
 
+    public OsobniPodaci create(OsobniPodaci osobniPodaci) {
+        return osobniPodaciRepository.save(osobniPodaci);
+    }
+
+    public OsobniPodaci delete(String oib) {
+       if (!osobniPodaciRepository.existsById(oib)) {
+        throw new org.springframework.web.server.ResponseStatusException(
+            org.springframework.http.HttpStatus.NOT_FOUND, 
+            "Brisanje neuspješno: Osoba s OIB-om " + oib + " ne postoji u bazi!"
+        );
+    }
+        osobniPodaciRepository.deleteById(oib);
+        return null;
+}
 
 }

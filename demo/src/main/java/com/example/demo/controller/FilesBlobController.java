@@ -7,9 +7,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.demo.entity.FilesBlob;
 import com.example.demo.service.FilesBlobService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -25,10 +30,18 @@ public class FilesBlobController {
     }
 
     @GetMapping("/{id}")
-    public FilesBlob getFilesBlobById(@RequestParam Integer id) {
+    public FilesBlob getFilesBlobById(@PathVariable Integer id) {
         return filesBlobService.getById(id);
     }
     
-    
-    
+    @PostMapping
+    public FilesBlob createFilesBlob(@RequestBody FilesBlob filesBlob) {
+        return filesBlobService.create(filesBlob);
+    }
+
+   @DeleteMapping("/{id}")
+    public FilesBlob delete(@PathVariable Integer id) {
+        return filesBlobService.delete(id);
+    }
+      
 }
