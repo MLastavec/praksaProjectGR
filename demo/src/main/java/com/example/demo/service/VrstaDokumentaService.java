@@ -24,7 +24,17 @@ public class VrstaDokumentaService {
                 HttpStatus.NOT_FOUND, "Vrsta dokumenta s ID-em " + id + " ne postoji!"));
     }
 
-    public VrstaDokumenta save(VrstaDokumenta vrsta) {
+    public VrstaDokumenta create(VrstaDokumenta vrsta) {
+        if (vrsta == null) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Objekt ne smije biti null");
+    }
+        if (vrsta.getVrsta_dokumenta() == null || vrsta.getVrsta_dokumenta().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Naziv vrste dokumenta mora biti popunjen.");
+        }
+        if (vrstaDokumentaRepository.existsByVrstaDokumentaCustom(vrsta.getVrsta_dokumenta())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Vrsta dokumenta s tim nazivom već postoji!");
+        }
+        
         return vrstaDokumentaRepository.save(vrsta);
     }
 

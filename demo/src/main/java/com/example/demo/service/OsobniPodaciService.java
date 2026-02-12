@@ -23,6 +23,22 @@ public class OsobniPodaciService {
     }
 
     public OsobniPodaci create(OsobniPodaci osobniPodaci) {
+        if (osobniPodaci == null) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, "Osobni podaci ne smiju biti null!");
+        }
+        if (osobniPodaci.getOib() == null || osobniPodaci.getOib().trim().isEmpty()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, "OIB ne smije biti prazan!");
+        }
+        if (osobniPodaci.getOib().trim().length() != 11) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, "OIB mora imati točno 11 znamenki!");
+        }
+        if (osobniPodaciRepository.existsById(osobniPodaci.getOib())) {
+        throw new org.springframework.web.server.ResponseStatusException(
+            org.springframework.http.HttpStatus.CONFLICT, "Osoba s OIB-om " + osobniPodaci.getOib() + " već postoji!");
+        }
         return osobniPodaciRepository.save(osobniPodaci);
     }
 

@@ -25,6 +25,9 @@ public class FilesBlobService {
     }
 
     public FilesBlob create(FilesBlob filesBlob) {
+        if (filesBlob.getDokument() == null || filesBlob.getDokument().length == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dokument (Blob) ne smije biti prazan.");
+        }
         return filesBlobRepository.save(filesBlob);
     }
 

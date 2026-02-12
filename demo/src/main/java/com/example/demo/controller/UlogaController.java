@@ -22,4 +22,14 @@ public class UlogaController {
     public Uloga getById(@PathVariable Integer id) {
         return service.getByIdUloga(id);
     }
+
+   /*  @PostMapping
+    public Uloga create(@RequestBody Uloga uloga) {
+        return service.create(uloga);
+    } */
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id) {
+        service.deleteByIdUloga(id);
+    }
 }

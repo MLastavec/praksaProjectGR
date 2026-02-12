@@ -35,7 +35,7 @@ public class VrstaDokumentaController {
 
     @PostMapping
     public VrstaDokumenta create(@RequestBody VrstaDokumenta vrsta) {
-        return vrstaDokumentaService.save(vrsta);
+        return vrstaDokumentaService.create(vrsta);
     }
 
     @DeleteMapping("/{id}")
