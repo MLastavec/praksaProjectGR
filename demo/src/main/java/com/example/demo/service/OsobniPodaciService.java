@@ -3,7 +3,10 @@ package com.example.demo.service;
 import com.example.demo.entity.OsobniPodaci;
 import com.example.demo.repository.OsobniPodaciRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @Service
@@ -39,6 +42,10 @@ public class OsobniPodaciService {
         throw new org.springframework.web.server.ResponseStatusException(
             org.springframework.http.HttpStatus.CONFLICT, "Osoba s OIB-om " + osobniPodaci.getOib() + " već postoji!");
         }
+        if (osobniPodaci.getEmail() == null || !osobniPodaci.getEmail().contains("@")) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email adresa nije ispravna!");
+        }
+        
         return osobniPodaciRepository.save(osobniPodaci);
     }
 

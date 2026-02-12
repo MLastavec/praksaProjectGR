@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface VrstaDokumentaRepository extends JpaRepository<VrstaDokumenta, Integer> {
 
-   @Query("SELECT COUNT(v) > 0 FROM VrstaDokumenta v WHERE v.vrsta_dokumenta = :vrijednost")
+    @Query("SELECT COUNT(v) > 0 FROM VrstaDokumenta v WHERE v.vrsta_dokumenta = :vrijednost")
     boolean existsByVrstaDokumentaCustom(@Param("vrijednost") String vrijednost);
     
 }
