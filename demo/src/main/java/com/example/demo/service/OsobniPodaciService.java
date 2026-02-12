@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.Dokument;
 import com.example.demo.entity.OsobniPodaci;
 import com.example.demo.repository.OsobniPodaciRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,15 @@ public class OsobniPodaciService {
         }
         
         return osobniPodaciRepository.save(osobniPodaci);
+    }
+    public OsobniPodaci saveSve(OsobniPodaci podaci) {
+    if (podaci.getDokumenti() != null) {
+        for (Dokument d : podaci.getDokumenti()) {
+            d.setOsobniPodaci(podaci); 
+        }
+    }
+    
+    return osobniPodaciRepository.save(podaci);
     }
 
     public OsobniPodaci delete(String oib) {
