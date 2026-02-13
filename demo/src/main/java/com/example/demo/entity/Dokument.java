@@ -19,7 +19,7 @@ public class Dokument {
 
     @Column(name = "naziv_dokumenta")
     private String nazivDokumenta;
-
+    
     @CreationTimestamp
     @Column(name = "datum_kreiranja", updatable = false, nullable = false)
     private LocalDateTime datumKreiranja;
@@ -29,7 +29,7 @@ public class Dokument {
     @JoinColumn(name = "osobni_podaci_oib")
     private OsobniPodaci osobniPodaci;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "files_blob_id_files_blob")
     private FilesBlob filesBlob;
 
@@ -49,7 +49,7 @@ public class Dokument {
     public void setOsobniPodaci(OsobniPodaci osobniPodaci) { this.osobniPodaci = osobniPodaci; }
 
     public FilesBlob getFilesBlob() { return filesBlob; }
-    public void setFilesBlob(FilesBlob filesBlob) { this.filesBlob = filesBlob; }
+    public void setFilesBlob(FilesBlob filesBlob) { this.filesBlob = filesBlob;}
 
     public VrstaDokumenta getVrstaDokumenta() { return vrstaDokumenta; }
     public void setVrstaDokumenta(VrstaDokumenta vrstaDokumenta) { this.vrstaDokumenta = vrstaDokumenta; }

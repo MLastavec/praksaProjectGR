@@ -1,13 +1,24 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.DokumentDTO;
+import com.example.demo.dto.RegistracijaDTO;
 import com.example.demo.entity.Dokument;
+import com.example.demo.entity.FilesBlob;
 import com.example.demo.entity.OsobniPodaci;
+import com.example.demo.entity.Uloga;
+import com.example.demo.entity.VrstaDokumenta;
 import com.example.demo.repository.OsobniPodaciRepository;
+import com.example.demo.repository.UlogaRepository;
+import com.example.demo.repository.VrstaDokumentaRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,6 +26,12 @@ public class OsobniPodaciService {
 
     @Autowired
     private OsobniPodaciRepository osobniPodaciRepository;
+
+    @Autowired
+    private VrstaDokumentaRepository vrstaDokumentaRepository;
+
+    @Autowired
+    private UlogaRepository ulogaRepository;
 
     public List<OsobniPodaci> getAll() {
         return osobniPodaciRepository.findAll();
@@ -49,15 +66,7 @@ public class OsobniPodaciService {
         
         return osobniPodaciRepository.save(osobniPodaci);
     }
-    public OsobniPodaci saveSve(OsobniPodaci podaci) {
-    if (podaci.getDokumenti() != null) {
-        for (Dokument d : podaci.getDokumenti()) {
-            d.setOsobniPodaci(podaci); 
-        }
-    }
-    
-    return osobniPodaciRepository.save(podaci);
-    }
+
 
     public OsobniPodaci delete(String oib) {
        if (!osobniPodaciRepository.existsById(oib)) {
@@ -69,5 +78,52 @@ public class OsobniPodaciService {
         osobniPodaciRepository.deleteById(oib);
         return null;
 }
+
+   @Transactional
+    public OsobniPodaci spremiKompletnuRegistraciju(RegistracijaDTO dto) {
+        OsobniPodaci osoba = new OsobniPodaci();
+        
+        osoba.setOib(dto.oib);
+        osoba.setIme(dto.ime);
+        osoba.setPrezime(dto.prezime);
+        osoba.setDatum_rodenja(dto.datum_rodenja); 
+        osoba.setAdresa(dto.adresa);
+        osoba.setEmail(dto.email);
+        osoba.setBroj_telefona(dto.brojTelefona);
+        osoba.setKorisnicko_ime(dto.korisnickoIme);
+        osoba.setLozinka(dto.lozinka);
+
+        Uloga ulogaKorisnik = ulogaRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("Greška: Uloga s ID 1 nije pronađena!"));
+        osoba.setUloga(ulogaKorisnik);
+
+        if (dto.dokumenti != null && !dto.dokumenti.isEmpty()) {
+            List<Dokument> listaDokumenata = new ArrayList<>();
+            
+            for (DokumentDTO dDto : dto.dokumenti) {
+                Dokument d = new Dokument();
+                d.setNazivDokumenta(dDto.nazivDokumenta);
+                d.setOsobniPodaci(osoba); 
+
+                if (dDto.filesBlob != null && !dDto.filesBlob.isEmpty()) {
+                    FilesBlob fb = new FilesBlob();
+                    fb.setDokument(dDto.filesBlob.getBytes()); 
+                    d.setFilesBlob(fb);
+                }
+
+                VrstaDokumenta vd = vrstaDokumentaRepository.findById(dDto.idVrstaDokumenta)
+                        .orElseThrow(() -> new RuntimeException("Vrsta dokumenta ne postoji!"));
+                d.setVrstaDokumenta(vd);
+
+                listaDokumenata.add(d);
+            }
+            osoba.setDokumenti(listaDokumenata);
+        }
+
+        return osobniPodaciRepository.save(osoba);
+    }
+
+    
+
 
 }

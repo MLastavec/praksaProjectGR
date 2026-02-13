@@ -5,6 +5,8 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+
+
 @Entity
 @Table(name = "vrsta_dokumenta")
 public class VrstaDokumenta {
@@ -20,7 +22,7 @@ public class VrstaDokumenta {
     @CreationTimestamp
     @Column(name = "datum_kreiranja")
     private LocalDate datum_kreiranja;
-
+    
     @Column(name = "kreirao")
     private String kreirao;
 
