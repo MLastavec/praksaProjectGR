@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OsobniPodaciRepository extends JpaRepository<OsobniPodaci, String> {
+
+    boolean existsByKorisnickoIme(String korisnickoIme);
     
 }

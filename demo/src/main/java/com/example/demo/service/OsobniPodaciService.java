@@ -81,8 +81,35 @@ public class OsobniPodaciService {
 
    @Transactional
     public OsobniPodaci spremiKompletnuRegistraciju(RegistracijaDTO dto) {
+
+        if (osobniPodaciRepository.existsByKorisnickoIme(dto.korisnickoIme)) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT, 
+                "Korisničko ime '" + dto.korisnickoIme + "' je već zauzeto!"
+            );
+        }
+
+        String lozinka = dto.lozinka;
+        if (lozinka.length() < 6) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Lozinka mora imati barem 6 znakova!"
+            );
+        }
+        if (!lozinka.matches(".*[0-9].*")) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Lozinka mora sadržavati barem jednu brojku!"
+            );
+        }
+        if (!lozinka.matches(".*[A-Z].*")) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Lozinka mora sadržavati barem jedno veliko slovo!"
+            );
+        }
+
         OsobniPodaci osoba = new OsobniPodaci();
-        
         osoba.setOib(dto.oib);
         osoba.setIme(dto.ime);
         osoba.setPrezime(dto.prezime);
@@ -122,8 +149,6 @@ public class OsobniPodaciService {
 
         return osobniPodaciRepository.save(osoba);
     }
-
-    
 
 
 }

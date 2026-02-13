@@ -35,7 +35,7 @@ public class OsobniPodaci {
     private String email;
 
     @Column(name = "korisnicko_ime")
-    private String korisnicko_ime;
+    private String korisnickoIme;
 
     @Column(name = "lozinka")
     private String lozinka;
@@ -76,8 +76,8 @@ public class OsobniPodaci {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getKorisnicko_ime() { return korisnicko_ime; }
-    public void setKorisnicko_ime(String korisnicko_ime) { this.korisnicko_ime = korisnicko_ime; }
+    public String getKorisnicko_ime() { return korisnickoIme; }
+    public void setKorisnicko_ime(String korisnicko_ime) { this.korisnickoIme = korisnicko_ime; }
 
     public String getLozinka() { return lozinka; }
     public void setLozinka(String lozinka) { this.lozinka = lozinka; }
