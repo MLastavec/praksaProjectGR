@@ -8,36 +8,47 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Entity
 @Table(name = "osobni_podaci")
 public class OsobniPodaci {
 
     @Id
     @Column(name = "oib")
+    @Schema(description = "Osobni identifikacijski broj (OIB)", example = "12345678901")
     private String oib;
 
     @Column(name = "ime")
+    @Schema(description = "Ime korisnika", example = "Ivan")
     private String ime;
 
     @Column(name = "prezime")
+    @Schema(description = "Prezime korisnika", example = "Horvat")
     private String prezime;
     
     @Column(name = "datum_rodenja")
+    @Schema(description = "Datum rođenja korisnika", example = "1990-01-01")
     private LocalDate datum_rodenja;
 
     @Column(name = "adresa")
+    @Schema(description = "Adresa korisnika", example = "Ulica 123, Grad")
     private String adresa;
 
     @Column(name = "broj_telefona")
+    @Schema(description = "Broj telefona korisnika", example = "+38591234567")
     private String broj_telefona;
 
     @Column(name = "email")
+    @Schema(description = "Email adresa korisnika", example = "ivan.horvat@example.com")
     private String email;
 
     @Column(name = "korisnicko_ime")
+    @Schema(description = "Korisničko ime za prijavu", example = "ivanhorvat")
     private String korisnickoIme;
 
     @Column(name = "lozinka")
+    @Schema(description = "Lozinka za prijavu", example = "lozinka123")
     private String lozinka;
 
     @CreationTimestamp

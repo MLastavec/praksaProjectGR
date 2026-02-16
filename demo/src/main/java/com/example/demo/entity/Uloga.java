@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +19,7 @@ public class Uloga {
     private Integer idUloga;
     
     @Column(name = "naziv_uloge")
+    @Schema(description = "Naziv uloge", example = "Admin")
     private String naziv_uloge;
 
     public Uloga() {

@@ -5,6 +5,8 @@ import java.time.LocalDate;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 
 
 @Entity
@@ -17,6 +19,7 @@ public class VrstaDokumenta {
     private Integer idVrstaDokumenta;
 
     @Column(name = "vrsta_dokumenta")
+    @Schema(description = "Naziv vrste dokumenta", example = "Faktura")
     private String vrsta_dokumenta;
 
     @CreationTimestamp
@@ -24,6 +27,7 @@ public class VrstaDokumenta {
     private LocalDate datum_kreiranja;
     
     @Column(name = "kreirao")
+    @Schema(description = "Korisnik koji je kreirao zapis", example = "admin")
     private String kreirao;
 
     public VrstaDokumenta() {}

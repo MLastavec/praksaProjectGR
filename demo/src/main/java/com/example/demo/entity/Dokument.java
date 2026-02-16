@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 @Entity
@@ -18,6 +19,7 @@ public class Dokument {
     private Integer idDokument;
 
     @Column(name = "naziv_dokumenta")
+    @Schema(description = "Naziv dokumenta", example = "Osobna iskaznica")
     private String nazivDokumenta;
     
     @CreationTimestamp
