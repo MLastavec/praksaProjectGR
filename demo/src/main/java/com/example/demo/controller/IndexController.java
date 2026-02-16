@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
+
 @Controller
 public class IndexController {
    @GetMapping("/")
@@ -19,6 +20,11 @@ public class IndexController {
     @GetMapping("/prijava")
     public String prijava() {
         return "forward:/html/prijava.html";
+    }
+    
+    @GetMapping("/dokumenti")
+    public String dokumenti() {
+        return "forward:/html/dokumenti.html";
     }
     
 }

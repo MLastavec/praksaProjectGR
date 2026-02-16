@@ -24,10 +24,12 @@ public class SecurityConfig {
                     "/", 
                     "/index.html", 
                     "/osobnipodaci",
+                    "/dokumenti",
                     "/html/**", 
                     "/js/**", 
                     "/prijava",
                     "/css/**",
+                    "/images/**",
                     "/v3/api-docs/**",      
                     "/swagger-ui/**",       
                     "/swagger-ui.html"      
@@ -37,9 +39,14 @@ public class SecurityConfig {
                 .formLogin(form -> form
                 .loginPage("/prijava")                
                 .loginProcessingUrl("/prijava")       
-                .defaultSuccessUrl("/osobni-podaci", true)
+                .defaultSuccessUrl("/", true)
                 .failureUrl("/prijava?error=true")    
                 .permitAll()
+            )
+            .logout(logout -> logout
+            .logoutUrl("/odjava") 
+            .logoutSuccessUrl("/")
+            .permitAll()
             )
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) -> {

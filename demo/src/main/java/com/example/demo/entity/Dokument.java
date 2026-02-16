@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -26,7 +27,7 @@ public class Dokument {
     @Column(name = "datum_kreiranja", updatable = false, nullable = false)
     private LocalDateTime datumKreiranja;
 
-    @JsonBackReference
+    @JsonIgnoreProperties({"dokumenti", "hibernateLazyInitializer", "handler"}) 
     @ManyToOne
     @JoinColumn(name = "osobni_podaci_oib")
     private OsobniPodaci osobniPodaci;

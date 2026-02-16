@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title> Documenti </title>
+</head>
+<body>
+    <div class="container">
+        <h2>Pregled Dokumenata</h2>
+        <button onclick="ucitajDokumente()">Osvježi popis</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Naziv dokumenta</th>
+                    <th>OIB Vlasnika</th>
+                    <th>Datum kreiranja</th>
+                    <th>Akcija</th>
+                </tr>
+            </thead>
+            <tbody id="dokumenti-body"></tbody>
+        </table>
+    </div>
+
+    <script src="/js/nav-loader.js"></script>
+    <script src="/js/dokumenti.js"></script>
+</body>
+</html>
