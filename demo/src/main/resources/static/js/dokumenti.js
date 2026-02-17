@@ -3,8 +3,7 @@ async function ucitajDokumente() {
     body.innerHTML = '<tr><td colspan="5">Učitavanje...</td></tr>';
 
     try {
-        
-        const response = await fetch('/api/dokument'); 
+        const response = await fetch('/api/dokument/moj-pregled'); 
         
         if (!response.ok) {
             throw new Error(`Status: ${response.status}`);

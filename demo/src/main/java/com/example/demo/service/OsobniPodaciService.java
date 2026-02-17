@@ -12,13 +12,14 @@ import com.example.demo.repository.UlogaRepository;
 import com.example.demo.repository.VrstaDokumentaRepository;
 
 import jakarta.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication; 
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -37,7 +38,6 @@ public class OsobniPodaciService {
         return osobniPodaciRepository.findAll();
     }
 
-     
     public OsobniPodaci getById(String oib) {
         return osobniPodaciRepository.findById(oib)
             .orElseThrow(() -> new RuntimeException("Greška: Podaci za OIB " + oib + " ne postoje u sustavu!"));
@@ -45,70 +45,47 @@ public class OsobniPodaciService {
 
     public OsobniPodaci create(OsobniPodaci osobniPodaci) {
         if (osobniPodaci == null) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                org.springframework.http.HttpStatus.BAD_REQUEST, "Osobni podaci ne smiju biti null!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Osobni podaci ne smiju biti null!");
         }
         if (osobniPodaci.getOib() == null || osobniPodaci.getOib().trim().isEmpty()) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                org.springframework.http.HttpStatus.BAD_REQUEST, "OIB ne smije biti prazan!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OIB ne smije biti prazan!");
         }
         if (osobniPodaci.getOib().trim().length() != 11) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                org.springframework.http.HttpStatus.BAD_REQUEST, "OIB mora imati točno 11 znamenki!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OIB mora imati točno 11 znamenki!");
         }
         if (osobniPodaciRepository.existsById(osobniPodaci.getOib())) {
-        throw new org.springframework.web.server.ResponseStatusException(
-            org.springframework.http.HttpStatus.CONFLICT, "Osoba s OIB-om " + osobniPodaci.getOib() + " već postoji!");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Osoba s OIB-om " + osobniPodaci.getOib() + " već postoji!");
         }
         if (osobniPodaci.getEmail() == null || !osobniPodaci.getEmail().contains("@")) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email adresa nije ispravna!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email adresa nije ispravna!");
         }
         
         return osobniPodaciRepository.save(osobniPodaci);
     }
 
-
-    public OsobniPodaci delete(String oib) {
+    public void delete(String oib) { 
        if (!osobniPodaciRepository.existsById(oib)) {
-        throw new org.springframework.web.server.ResponseStatusException(
-            org.springframework.http.HttpStatus.NOT_FOUND, 
-            "Brisanje neuspješno: Osoba s OIB-om " + oib + " ne postoji u bazi!"
-        );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Brisanje neuspješno: Osoba s OIB-om " + oib + " ne postoji u bazi!");
+       }
+       osobniPodaciRepository.deleteById(oib);
     }
-        osobniPodaciRepository.deleteById(oib);
-        return null;
-}
 
-   @Transactional
+    @Transactional
     public OsobniPodaci spremiKompletnuRegistraciju(RegistracijaDTO dto) {
-
         if (osobniPodaciRepository.existsByKorisnickoIme(dto.korisnickoIme)) {
-            throw new ResponseStatusException(
-                HttpStatus.CONFLICT, 
-                "Korisničko ime '" + dto.korisnickoIme + "' je već zauzeto!"
-            );
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Korisničko ime '" + dto.korisnickoIme + "' je već zauzeto!");
         }
 
-        String lozinka = dto.lozinka;
-        if (lozinka.length() < 6) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Lozinka mora imati barem 6 znakova!"
-            );
-        }
-        if (!lozinka.matches(".*[0-9].*")) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Lozinka mora sadržavati barem jednu brojku!"
-            );
-        }
-        if (!lozinka.matches(".*[A-Z].*")) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Lozinka mora sadržavati barem jedno veliko slovo!"
-            );
+        if (dto.lozinka.length() < 6) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lozinka mora imati barem 6 znakova!");
         }
 
+        String lozinkaRegex = "^(?=.*[A-Z])(?=.*[0-9]).{8,}$";
+            
+            if (dto.lozinka == null || !dto.lozinka.matches(lozinkaRegex)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "Lozinka mora imati barem 8 znakova, jedno veliko slovo i jedan broj!");
+            }
         OsobniPodaci osoba = new OsobniPodaci();
         osoba.setOib(dto.oib);
         osoba.setIme(dto.ime);
@@ -120,13 +97,14 @@ public class OsobniPodaciService {
         osoba.setKorisnicko_ime(dto.korisnickoIme);
         osoba.setLozinka(dto.lozinka);
 
+        
         Uloga ulogaKorisnik = ulogaRepository.findById(1)
                 .orElseThrow(() -> new RuntimeException("Greška: Uloga s ID 1 nije pronađena!"));
         osoba.setUloga(ulogaKorisnik);
 
+        
         if (dto.dokumenti != null && !dto.dokumenti.isEmpty()) {
             List<Dokument> listaDokumenata = new ArrayList<>();
-            
             for (DokumentDTO dDto : dto.dokumenti) {
                 Dokument d = new Dokument();
                 d.setNazivDokumenta(dDto.nazivDokumenta);
@@ -150,5 +128,23 @@ public class OsobniPodaciService {
         return osobniPodaciRepository.save(osoba);
     }
 
+    
+    public List<OsobniPodaci> dohvatiSveIliSamoSvoje(Authentication auth) {
+        if (auth == null) {
+            return Collections.emptyList();
+        }
 
+        
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            return osobniPodaciRepository.findAll(); 
+        } else {
+            String username = auth.getName(); 
+            return osobniPodaciRepository.findByKorisnickoIme(username)
+                    .map(List::of) 
+                    .orElse(Collections.emptyList());
+        }
+    }
 }

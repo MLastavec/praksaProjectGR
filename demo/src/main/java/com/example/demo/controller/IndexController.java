@@ -26,5 +26,11 @@ public class IndexController {
     public String dokumenti() {
         return "forward:/html/dokumenti.html";
     }
+
+    @GetMapping("/registracija")
+    public String registracija() {
+        return "forward:/html/registracija.html";
+    }
+    
     
 }

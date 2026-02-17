@@ -43,12 +43,18 @@ public class OsobniPodaciController {
 
     @DeleteMapping("/{oib}")
     public OsobniPodaci delete(@PathVariable String oib) {
-        return osobniPodaciService.delete(oib);
+        osobniPodaciService.delete(oib);
+        return null;
     }
     
     @GetMapping("/api/auth/status")
     @ResponseBody
     public String getStatus() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    @GetMapping("/moj-pregled")
+    public List<OsobniPodaci> getMojPregled(org.springframework.security.core.Authentication auth) {
+        return osobniPodaciService.dohvatiSveIliSamoSvoje(auth);
     }
 }

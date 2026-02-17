@@ -24,4 +24,27 @@ document.addEventListener("DOMContentLoaded", function() {
                     document.querySelectorAll('.auth-link').forEach(el => el.style.display = 'none');
                 });
         });
+
+        
+    fetch('/api/korisnik')
+    .then(res => {
+        if (res.ok) {
+            return res.text(); 
+        }
+        return null; 
+    })
+    .then(ime => {
+        const header = document.getElementById('welcome-header');
+        if (header) {
+            if (ime && ime !== "Gost") {
+                header.innerText = "Dobrodošli, " + ime + "!";
+            } else {
+                header.innerText = "Dobrodošli!"; 
+            }
+        }
+    })
+    .catch(err => {
+        console.log("Niste prijavljeni.");
+        document.getElementById('welcome-header').innerText = "Dobrodošli!";
+    });
 });

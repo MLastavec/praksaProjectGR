@@ -98,5 +98,6 @@ public class OsobniPodaci {
 
     public List<Dokument> getDokumenti() { return dokumenti; }
     public void setDokumenti(List<Dokument> dokumenti) { this.dokumenti = dokumenti; }
+
 }
 

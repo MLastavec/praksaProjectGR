@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,8 @@ public class RegistracijaController {
     @Autowired
     private OsobniPodaciService osobniPodaciService;
 
-    @PostMapping
-    public OsobniPodaci registracija(@RequestBody RegistracijaDTO dto) {
+        @PostMapping("/registracija") 
+        public OsobniPodaci registracija(@RequestBody RegistracijaDTO dto) {
         return osobniPodaciService.spremiKompletnuRegistraciju(dto);
     }
 }

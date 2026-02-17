@@ -3,9 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
     <title> Registracija </title>
 </head>
 <body>
-    
+    <div class="container">
+    <form id="regForm">
+        <h2>Registracija Korisnika</h2>
+
+        <div class="form-group">
+            <label>OIB (11 znamenki):</label>
+            <input type="text" id="oib" required maxlength="11">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Ime:</label>
+                <input type="text" id="ime" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Prezime:</label>
+                <input type="text" id="prezime" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Datum rođenja:</label>
+            <input type="date" id="datum_rodenja" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email adresa:</label>
+            <input type="email" id="email" required placeholder="xxx@xxxx.xx">
+        </div>
+
+        <div class="form-group">
+            <label>Adresa stanovanja:</label>
+            <input type="text" id="adresa">
+        </div>
+
+        <div class="form-group">
+            <label>Broj telefona:</label>
+            <input type="text" id="brojTelefona">
+        </div>
+
+        <hr>
+
+        <div class="form-group">
+            <label>Korisničko ime:</label>
+            <input type="text" id="korisnickoIme" required>
+        </div>
+
+        <div class="form-group">
+            <label>Lozinka:</label>
+            <input type="password" id="lozinka" required placeholder="Min. 6 znakova, broj i veliko slovo">
+        </div>
+
+        <button type="submit" class="btn-registracija">ZAVRŠI REGISTRACIJU</button>
+    </form>
+</div>
+
+ <script src="/js/nav-loader.js"></script>
+ <script src="/js/registracija.js"></script>
 </body>
 </html>
