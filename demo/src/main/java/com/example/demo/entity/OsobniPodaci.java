@@ -96,6 +96,10 @@ public class OsobniPodaci {
     public Uloga getUloga() { return uloga; }
     public void setUloga(Uloga uloga) { this.uloga = uloga; }
 
+    public void setDatumKreiranja(LocalDateTime datumKreiranja) { 
+    this.datumKreiranja = datumKreiranja; 
+    }
+
     public List<Dokument> getDokumenti() { return dokumenti; }
     public void setDokumenti(List<Dokument> dokumenti) { this.dokumenti = dokumenti; }
 

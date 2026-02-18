@@ -28,7 +28,7 @@ async function ucitajOsobnePodatke(stranica = 0) {
                     <td>${osoba.email}</td>
                     <td>${osoba.korisnicko_ime}</td>
                     <td>${osoba.datumKreiranja ? new Date(osoba.datumKreiranja).toLocaleDateString('hr-HR') : '—'}</td>
-                </tr>
+                </tr>r
             `;
             tbody.innerHTML += red;
         });

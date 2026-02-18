@@ -3,19 +3,12 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page; 
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.Dokument;
 import com.example.demo.service.DokumentService;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 @RestController
 @RequestMapping("/api/dokument")
@@ -45,7 +38,10 @@ public class DokumentController {
     }
 
     @GetMapping("/moj-pregled")
-    public List<Dokument> getDokumenti(Authentication auth) {
-        return dokumentService.dohvatiDokumenteOvisnoOUlozi(auth);
+    public Page<Dokument> getDokumenti(
+        Authentication auth, 
+        @RequestParam(defaultValue = "0") int stranica
+    ) {
+        return dokumentService.dohvatiDokumenteStraniceno(auth, stranica);
     }
 }
