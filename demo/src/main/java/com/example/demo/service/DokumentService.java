@@ -5,6 +5,8 @@ import com.example.demo.entity.OsobniPodaci;
 import com.example.demo.repository.DokumentRepository;
 import com.example.demo.repository.OsobniPodaciRepository; 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections; 
 import java.util.List;
+
+import org.springframework.data.domain.Pageable;
+
 
 @Service
 public class DokumentService {
@@ -64,4 +69,22 @@ public class DokumentService {
                     .orElse(Collections.emptyList());
         }
     }
+
+   public Page<Dokument> dohvatiDokumenteStraniceno(Authentication auth, int stranica) {
+    Pageable pageable = PageRequest.of(stranica, 10);
+    
+    if (auth == null) return Page.empty();
+
+    boolean isAdmin = auth.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+    if (isAdmin) {
+        return dokumentRepository.findAll(pageable);
+    } else {
+        String username = auth.getName();
+        return osobniPodaciRepository.findByKorisnickoIme(username)
+                .map(osoba -> dokumentRepository.findByOsobniPodaci_Oib(osoba.getOib(), pageable))
+                .orElse(Page.empty());
+    }
+}
 }

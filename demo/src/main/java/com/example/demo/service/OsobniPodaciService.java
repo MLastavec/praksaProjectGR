@@ -12,6 +12,8 @@ import com.example.demo.repository.UlogaRepository;
 import com.example.demo.repository.VrstaDokumentaRepository;
 
 import jakarta.transaction.Transactional;
+
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication; 
@@ -21,6 +23,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 
 @Service
 public class OsobniPodaciService {
@@ -145,6 +152,27 @@ public class OsobniPodaciService {
             return osobniPodaciRepository.findByKorisnickoIme(username)
                     .map(List::of) 
                     .orElse(Collections.emptyList());
+        }
+    }
+
+
+    public Page<OsobniPodaci> dohvatiStraniceno(Authentication auth, int stranica) {
+        Pageable pageable = PageRequest.of(stranica, 10);
+        
+        if (auth == null) {
+            return Page.empty();
+        }
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            return osobniPodaciRepository.findAll(pageable);
+        } else {
+            String username = auth.getName();
+            Optional<OsobniPodaci> osoba = osobniPodaciRepository.findByKorisnickoIme(username);
+            return osoba.map(o -> new PageImpl<>(List.of(o), pageable, 1))
+                        .orElse(new PageImpl<>(Collections.emptyList(), pageable, 0));
         }
     }
 }

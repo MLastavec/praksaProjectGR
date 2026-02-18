@@ -1,51 +1,41 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.example.demo.entity.OsobniPodaci;
 import com.example.demo.service.OsobniPodaciService;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/osobni-podaci")
 public class OsobniPodaciController {
-    
+
     @Autowired
     private OsobniPodaciService osobniPodaciService;
 
-    @GetMapping
-    public List<OsobniPodaci> getAll() {
-        return osobniPodaciService.getAll();
-    }
-
-    @GetMapping("/{oib}")
-    public OsobniPodaci getById(@PathVariable String oib) {
-        return osobniPodaciService.getById(oib);
-    }
-
-    @PostMapping
-    public OsobniPodaci create(@RequestBody OsobniPodaci osobniPodaci) {
-        return osobniPodaciService.create(osobniPodaci);
+    @GetMapping("/moj-pregled")
+    public Page<OsobniPodaci> getMojPregled(
+        Authentication auth, 
+        @RequestParam(defaultValue = "0") int stranica 
+    ) {
+        return osobniPodaciService.dohvatiStraniceno(auth, stranica);
     }
 
 
-    @DeleteMapping("/{oib}")
-    public OsobniPodaci delete(@PathVariable String oib) {
+    @GetMapping("/svi")
+    public Page<OsobniPodaci> getAll(@RequestParam(defaultValue = "0") Authentication stranica) {
+        return osobniPodaciService.dohvatiStraniceno(stranica, 10);
+    }
+
+        @DeleteMapping("/{oib}")
+    public void delete(@PathVariable String oib) {
         osobniPodaciService.delete(oib);
-        return null;
     }
+    
     
     @GetMapping("/api/auth/status")
     @ResponseBody
@@ -53,8 +43,4 @@ public class OsobniPodaciController {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-    @GetMapping("/moj-pregled")
-    public List<OsobniPodaci> getMojPregled(org.springframework.security.core.Authentication auth) {
-        return osobniPodaciService.dohvatiSveIliSamoSvoje(auth);
-    }
 }

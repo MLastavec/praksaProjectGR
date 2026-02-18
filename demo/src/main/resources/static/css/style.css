@@ -143,3 +143,13 @@ h1::after {
     margin: 10px auto 0; 
     border-radius: 2px;
 }
+
+.paginacija {
+   display: flex !important;   
+    justify-content: center !important; 
+    align-items: center !important;
+    width: 100% !important;
+    margin: 30px auto !important; 
+    padding: 20px 0;
+    clear: both; 
+}
