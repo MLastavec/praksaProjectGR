@@ -30,7 +30,7 @@ public class SecurityConfig {
                     "/prijava",
                     "/prijava.html",
                     "/registracija",
-                    "/api/registracija/**",
+                    "/api/registracija/registracija",
                     "/css/**",
                     "/images/**",
                     "/v3/api-docs/**",      
@@ -82,4 +82,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
+
 }
