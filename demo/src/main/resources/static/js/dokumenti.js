@@ -1,4 +1,5 @@
 let trenutnaStranica = 0;
+let sviDokumenti = []; 
 
 const VRSTE_MAP = {
     1: 'Preslika osobne iskaznice',
@@ -16,26 +17,18 @@ async function ucitajDokumente(stranica = 0) {
 
     try {
         const response = await fetch(`/api/dokument/moj-pregled?stranica=${stranica}`);
-        
-        if (!response.ok) {
-            throw new Error(`Status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Status: ${response.status}`);
 
         const podaci = await response.json();
+        sviDokumenti = podaci.content; 
+        
         body.innerHTML = ''; 
 
-        if (podaci.content && podaci.content.length > 0) {
-            podaci.content.forEach(doc => {
-                let idVrste = doc.idVrstaDokumenta;
-                
-                if (!idVrste && doc.vrstaDokumenta) {
-                    idVrste = doc.vrstaDokumenta.idVrstaDokumenta;
-                }
-
+        if (sviDokumenti && sviDokumenti.length > 0) {
+            sviDokumenti.forEach((doc, index) => { 
+                let idVrste = doc.idVrstaDokumenta || (doc.vrstaDokumenta ? doc.vrstaDokumenta.idVrstaDokumenta : null);
                 const nazivVrste = VRSTE_MAP[idVrste] || `Ostalo/Nepoznato (ID: ${idVrste})`;
-                
                 const oib = doc.osobniPodaciOib || (doc.osobniPodaci ? doc.osobniPodaci.oib : 'Nije dodijeljeno');
-                
                 const datum = doc.datumKreiranja ? new Date(doc.datumKreiranja).toLocaleDateString('hr-HR') : '-';
 
                 const red = `
@@ -48,7 +41,7 @@ async function ucitajDokumente(stranica = 0) {
                         <td style="font-weight:bold;">${oib}</td>
                         <td>${datum}</td>
                         <td>
-                            <button class="btn-preuzmi" onclick="preuzmiDokument(${doc.idDokument})">
+                            <button class="btn-preuzmi" onclick="pokreniPreuzimanje(${index})">
                                 Preuzmi
                             </button>
                         </td>
@@ -58,17 +51,59 @@ async function ucitajDokumente(stranica = 0) {
         } else {
             body.innerHTML = '<tr><td colspan="6">Nema pronađenih dokumenata.</td></tr>';
         }
-
         iscrtajPaginaciju(podaci.totalPages, podaci.number);
-
     } catch (error) {
-        console.error("Greška pri dohvaćanju:", error);
-        body.innerHTML = `<tr><td colspan="6" style="color:red">Greška pri učitavanju: ${error.message}</td></tr>`;
+        console.error("Greška:", error);
+        body.innerHTML = `<tr><td colspan="6" style="color:red">Greška: ${error.message}</td></tr>`;
     }
 }
 
-function preuzmiDokument(id) {
-    window.open(`/api/dokument/preuzmi/${id}`, '_blank');
+function pokreniPreuzimanje(index) {
+    const doc = sviDokumenti[index];
+    const base64Str = (doc.filesBlob && doc.filesBlob.dokument) ? doc.filesBlob.dokument : doc.filesBlob;
+    
+    preuzmiDokument(base64Str, doc.nazivDokumenta);
+}
+
+function preuzmiDokument(base64Data, nazivDatoteke) {
+    if (!base64Data) {
+        alert("Podaci o datoteci su prazni ili nepostojeći.");
+        return;
+    }
+
+    try {
+        let finalBase64 = String(base64Data).trim();
+        let mimeType = "application/pdf";
+
+        try {
+            window.atob(finalBase64); 
+        } catch (e) {
+            console.warn("Podatak nije Base64, enkodiram...");
+            finalBase64 = btoa(finalBase64);
+            mimeType = "text/plain";
+        }
+
+        if (mimeType !== "text/plain") {
+            if (finalBase64.startsWith("JVBERi")) mimeType = "application/pdf";
+            else if (finalBase64.startsWith("iVBORw")) mimeType = "image/png";
+            else if (finalBase64.startsWith("/9j/")) mimeType = "image/jpeg";
+        }
+
+        const linkSource = `data:${mimeType};base64,${finalBase64}`;
+        const downloadLink = document.createElement("a");
+        let ext = mimeType.split("/")[1].replace("plain", "txt").replace("jpeg", "jpg");
+        let ime = nazivDatoteke ? nazivDatoteke.split('.')[0] : "dokument";
+        
+        downloadLink.href = linkSource;
+        downloadLink.download = `${ime}.${ext}`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+    } catch (err) {
+        console.error("Kritična greška:", err);
+        alert("Greška pri generiranju datoteke.");
+    }
 }
 
 function iscrtajPaginaciju(ukupnoStranica, trenutna) {
