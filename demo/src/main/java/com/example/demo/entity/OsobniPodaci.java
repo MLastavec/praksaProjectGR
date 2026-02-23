@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +29,7 @@ public class OsobniPodaci {
     private String prezime;
     
     @Column(name = "datum_rodenja")
-    @Schema(description = "Datum rođenja korisnika", example = "1990-01-01")
+    @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd") 
     private LocalDate datum_rodenja;
 
     @Column(name = "adresa")
@@ -58,7 +59,8 @@ public class OsobniPodaci {
     @ManyToOne
     @JoinColumn(name = "uloga_iduloga")
     private Uloga uloga;
-
+    
+    @JsonIgnore 
     @JsonManagedReference
     @OneToMany(mappedBy = "osobniPodaci", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Dokument> dokumenti;
@@ -87,8 +89,8 @@ public class OsobniPodaci {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getKorisnicko_ime() { return korisnickoIme; }
-    public void setKorisnicko_ime(String korisnicko_ime) { this.korisnickoIme = korisnicko_ime; }
+    public String getKorisnickoIme() { return korisnickoIme; }
+    public void setKorisnickoIme(String korisnickoIme) { this.korisnickoIme = korisnickoIme; }
 
     public String getLozinka() { return lozinka; }
     public void setLozinka(String lozinka) { this.lozinka = lozinka; }

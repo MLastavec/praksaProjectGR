@@ -31,16 +31,26 @@ public class OsobniPodaciController {
         return osobniPodaciService.dohvatiStraniceno(stranica, 10);
     }
 
-        @DeleteMapping("/{oib}")
+    @DeleteMapping("/{oib}")
     public void delete(@PathVariable String oib) {
         osobniPodaciService.delete(oib);
     }
     
     
-    @GetMapping("/api/auth/status")
+    @GetMapping("/auth-status")
     @ResponseBody
     public String getStatus() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
+    @GetMapping("/{oib}")
+    public OsobniPodaci dohvatiPoOibu(@PathVariable String oib) {
+        return osobniPodaciService.findByOib(oib); 
+    }
+    
+    @PutMapping(value = "/{oib}", consumes = "application/json", produces = "application/json")
+    public OsobniPodaci azuriraj(@PathVariable String oib, @RequestBody OsobniPodaci noviPodaci) {
+        System.out.println("Primljen zahtjev za OIB: " + oib);
+        return osobniPodaciService.azurirajKorisnika(oib, noviPodaci);
+    }
 }

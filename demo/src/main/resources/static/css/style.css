@@ -105,7 +105,7 @@ button:hover {
 .form-group {
     margin-bottom: 15px;
     display: flex;
-    flex-direction: column; /* Label iznad inputa za čišći izgled */
+    flex-direction: column; 
 }
 
 .form-group label {
@@ -153,3 +153,46 @@ h1::after {
     padding: 20px 0;
     clear: both; 
 }
+
+#editModal {
+    /* Centriranje i sjena */
+    border: none !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+    padding: 25px !important;
+}
+
+#editModal h3 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 22px;
+}
+
+#editModal label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+    font-size: 14px;
+}
+
+#editModal input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; 
+    font-size: 15px;
+}
+
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-spremi { background-color: #28a745 !important; }
+.btn-zatvori { background-color: #dc3545 !important; }

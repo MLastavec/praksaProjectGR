@@ -12,8 +12,9 @@
     <div class="container">
         <h2><i class="fas fa-users"></i> Osobni Podaci Korisnika</h2>
         <button class="btn-refresh" onclick="ucitajOsobnePodatke()">Osvježi tablicu</button>
+        <input type="text" id="searchInput" placeholder="Pretraži...">
         
-        <table>
+        <table id="tablicaKorisnika">
             <thead>
                 <tr>
                     <th>OIB</th>
@@ -23,8 +24,8 @@
                     <th>Adresa</th>
                     <th>Broj Telefona</th>
                     <th>Email</th>
-                    <th>Korisničko ime</th>
-                    <th>Datum Kreiranja</th>
+                    <th>Korisničko ime </th>
+                    <th>Akcija</th>
                 </tr>
             </thead>
             <tbody id="osobniPodaciBody">
@@ -33,6 +34,42 @@
     </div>
 
     <div id="paginacijaOsobni" class="paginacija"></div>
+
+    <div id="editModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; border:2px solid #333; z-index:99999; box-shadow: 0px 0px 20px rgba(0,0,0,0.5); min-width: 300px; border-radius: 10px;">
+        <h3 style="margin-top:0;">Uredi korisnika</h3>
+        
+        <input type="hidden" id="editOib">
+        
+        <div style="margin-bottom:10px;">
+            <label>Ime:</label><br>
+            <input type="text" id="editIme" style="width:100%;">
+        </div>
+        
+        <div style="margin-bottom:10px;">
+            <label>Prezime:</label><br>
+            <input type="text" id="editPrezime" style="width:100%;">
+        </div>
+        
+        <div style="margin-bottom:10px;">
+            <label>Adresa:</label><br>
+            <input type="text" id="editAdresa" style="width:100%;">
+        </div>
+        
+        <div style="margin-bottom:10px;">
+            <label>Telefon:</label><br>
+            <input type="text" id="editTelefon" style="width:100%;">
+        </div>
+        
+        <div style="margin-bottom:15px;">
+            <label>Email:</label><br>
+            <input type="text" id="editEmail" style="width:100%;">
+        </div>
+        
+      <div class="modal-footer">
+        <button class="btn-spremi" onclick="spremiPromjene()">Spremi</button>
+        <button class="btn-zatvori" onclick="document.getElementById('editModal').style.display='none'">Zatvori</button>
+    </div>
+    </div>
 
      <script src="/js/nav-loader.js"></script>
     <script src="js/osobni_podaci.js"></script>

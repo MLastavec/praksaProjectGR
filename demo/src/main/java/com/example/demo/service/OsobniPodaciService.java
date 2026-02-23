@@ -84,7 +84,7 @@ public class OsobniPodaciService {
         osoba.setAdresa(dto.adresa);
         osoba.setEmail(dto.email);
         osoba.setBroj_telefona(dto.brojTelefona);
-        osoba.setKorisnicko_ime(dto.korisnickoIme);
+        osoba.setKorisnickoIme(dto.korisnickoIme);
         osoba.setLozinka(dto.lozinka);
 
         Uloga ulogaKorisnik = ulogaRepository.findById(1)
@@ -138,5 +138,22 @@ public class OsobniPodaciService {
                     .map(o -> new PageImpl<>(List.of(o), pageable, 1))
                     .orElse(new PageImpl<>(Collections.emptyList(), pageable, 0));
         }
+    }
+
+   public OsobniPodaci azurirajKorisnika(String oib, OsobniPodaci noviPodaci) {
+        OsobniPodaci postojeci = osobniPodaciRepository.findById(oib)
+                .orElseThrow(() -> new RuntimeException("Korisnik s OIB-om " + oib + " ne postoji."));
+        postojeci.setIme(noviPodaci.getIme());
+        postojeci.setPrezime(noviPodaci.getPrezime());
+        postojeci.setAdresa(noviPodaci.getAdresa());
+        postojeci.setBroj_telefona(noviPodaci.getBroj_telefona()); 
+        postojeci.setEmail(noviPodaci.getEmail());
+
+        return osobniPodaciRepository.save(postojeci);
+    }
+
+    public OsobniPodaci findByOib(String oib) {
+        return osobniPodaciRepository.findById(oib)
+                .orElseThrow(() -> new RuntimeException("Korisnik s OIB-om " + oib + " ne postoji."));
     }
 }

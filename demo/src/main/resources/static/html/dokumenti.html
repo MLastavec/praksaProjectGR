@@ -10,14 +10,16 @@
     <div class="container">
         <h2>Pregled Dokumenata</h2>
         <button onclick="ucitajDokumente()">Osvježi popis</button>
+        <input type="text" id="searchDokumenti" placeholder="Pretraži...">
         
-        <table>
+        <table id="tablicaDokumenata">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Vrsta dokumenta</th>
                     <th>Naziv dokumenta</th>
                     <th>OIB Vlasnika</th>
+                    <th>Vlasnik</th>
                     <th>Datum kreiranja</th>
                     <th>Akcija</th>
                 </tr>

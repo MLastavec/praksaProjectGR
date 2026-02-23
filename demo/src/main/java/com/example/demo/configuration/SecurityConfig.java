@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
@@ -18,7 +17,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/", 
@@ -27,29 +26,32 @@ public class SecurityConfig {
                     "/dokumenti",
                     "/html/**", 
                     "/js/**", 
+                    "/css/**",
+                    "/images/**",
+                    "/favicon.ico",
                     "/prijava",
                     "/prijava.html",
                     "/registracija",
-                    "/api/registracija/registracija",
-                    "/css/**",
-                    "/images/**",
+                    "/registracija.html",
+                    "/api/registracija/**",   
+                    "/api/korisnik/prijava",  
                     "/v3/api-docs/**",      
                     "/swagger-ui/**",       
                     "/swagger-ui.html"      
-                ).permitAll()
-                .anyRequest().authenticated()
+                ).permitAll() 
+                .anyRequest().authenticated() 
             )
-                .formLogin(form -> form
-                .loginPage("/prijava")                
-                .loginProcessingUrl("/prijava")       
+            .formLogin(form -> form
+                .loginPage("/html/prijava.html") 
+                .loginProcessingUrl("/prijava")   
                 .defaultSuccessUrl("/", true)
-                .failureUrl("/prijava?error=true")    
+                .failureUrl("/html/prijava.html?error=true")
                 .permitAll()
             )
             .logout(logout -> logout
-            .logoutUrl("/odjava") 
-            .logoutSuccessUrl("/")
-            .permitAll()
+                .logoutUrl("/odjava") 
+                .logoutSuccessUrl("/")
+                .permitAll()
             )
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) -> {
@@ -82,5 +84,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
-
 }

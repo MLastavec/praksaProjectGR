@@ -18,26 +18,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        OsobniPodaci osoba = repository.findByKorisnickoIme(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Korisnik "+ username + " nije pronađen!" ));
+public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    OsobniPodaci osoba = repository.findByKorisnickoIme(username)
+            .orElseThrow(() -> new UsernameNotFoundException("Korisnik " + username + " nije pronađen!"));
+    String ulogaNaziv = (osoba.getUloga() != null && osoba.getUloga().getIdUloga() == 1) ? "USER" : "ADMIN";
 
-        String ulogaNaziv;
-        
-        if (osoba.getUloga() != null && osoba.getUloga().getIdUloga() == 1) { 
-            ulogaNaziv = "USER";
-        } else {
-            ulogaNaziv = "ADMIN";
-        }
-
-        return User.builder()
-                .username(osoba.getKorisnicko_ime()) 
-                .password(osoba.getLozinka()) 
-                .roles(ulogaNaziv) 
-                .build();
-
-                
-    }
-
-    
+    return User.builder()
+            .username(osoba.getKorisnickoIme()) 
+            .password(osoba.getLozinka())
+            .roles(ulogaNaziv)
+            .build();
+}
 }

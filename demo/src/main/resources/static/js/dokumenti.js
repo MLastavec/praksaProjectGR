@@ -1,5 +1,5 @@
 let trenutnaStranica = 0;
-let sviDokumenti = []; 
+let sviDokumenti = [];
 
 const VRSTE_MAP = {
     1: 'Preslika osobne iskaznice',
@@ -27,8 +27,21 @@ async function ucitajDokumente(stranica = 0) {
         if (sviDokumenti && sviDokumenti.length > 0) {
             sviDokumenti.forEach((doc, index) => { 
                 let idVrste = doc.idVrstaDokumenta || (doc.vrstaDokumenta ? doc.vrstaDokumenta.idVrstaDokumenta : null);
-                const nazivVrste = VRSTE_MAP[idVrste] || `Ostalo/Nepoznato (ID: ${idVrste})`;
+                const nazivVrste = VRSTE_MAP[idVrste] || `Ostalo (ID: ${idVrste})`;
+                
                 const oib = doc.osobniPodaciOib || (doc.osobniPodaci ? doc.osobniPodaci.oib : 'Nije dodijeljeno');
+  
+                let ime = doc.ime;
+                let prezime = doc.prezime;
+
+                if (!ime && doc.osobniPodaci) {
+                    ime = doc.osobniPodaci.ime;
+                    prezime = doc.osobniPodaci.prezime;
+                }
+
+                const puniNazivVlasnika = ime ? `${ime} ${prezime || ''}` : 'Nepoznato';
+                
+                // 4. Formatiranje datuma
                 const datum = doc.datumKreiranja ? new Date(doc.datumKreiranja).toLocaleDateString('hr-HR') : '-';
 
                 const red = `
@@ -39,6 +52,7 @@ async function ucitajDokumente(stranica = 0) {
                             ${doc.nazivDokumenta || 'Bez naziva'}
                         </td>
                         <td style="font-weight:bold;">${oib}</td>
+                        <td>${puniNazivVlasnika}</td>
                         <td>${datum}</td>
                         <td>
                             <button class="btn-preuzmi" onclick="pokreniPreuzimanje(${index})">
@@ -49,25 +63,24 @@ async function ucitajDokumente(stranica = 0) {
                 body.insertAdjacentHTML('beforeend', red);
             });
         } else {
-            body.innerHTML = '<tr><td colspan="6">Nema pronađenih dokumenata.</td></tr>';
+            body.innerHTML = '<tr><td colspan="7">Nema pronađenih dokumenata.</td></tr>';
         }
         iscrtajPaginaciju(podaci.totalPages, podaci.number);
     } catch (error) {
         console.error("Greška:", error);
-        body.innerHTML = `<tr><td colspan="6" style="color:red">Greška: ${error.message}</td></tr>`;
+        body.innerHTML = `<tr><td colspan="7" style="color:red">Greška: ${error.message}</td></tr>`;
     }
 }
 
 function pokreniPreuzimanje(index) {
     const doc = sviDokumenti[index];
     const base64Str = (doc.filesBlob && doc.filesBlob.dokument) ? doc.filesBlob.dokument : doc.filesBlob;
-    
     preuzmiDokument(base64Str, doc.nazivDokumenta);
 }
 
 function preuzmiDokument(base64Data, nazivDatoteke) {
     if (!base64Data) {
-        alert("Podaci o datoteci su prazni ili nepostojeći.");
+        alert("Podaci o datoteci su prazni.");
         return;
     }
 
@@ -78,7 +91,6 @@ function preuzmiDokument(base64Data, nazivDatoteke) {
         try {
             window.atob(finalBase64); 
         } catch (e) {
-            console.warn("Podatak nije Base64, enkodiram...");
             finalBase64 = btoa(finalBase64);
             mimeType = "text/plain";
         }
@@ -92,16 +104,15 @@ function preuzmiDokument(base64Data, nazivDatoteke) {
         const linkSource = `data:${mimeType};base64,${finalBase64}`;
         const downloadLink = document.createElement("a");
         let ext = mimeType.split("/")[1].replace("plain", "txt").replace("jpeg", "jpg");
-        let ime = nazivDatoteke ? nazivDatoteke.split('.')[0] : "dokument";
+        let imeFile = nazivDatoteke ? nazivDatoteke.split('.')[0] : "dokument";
         
         downloadLink.href = linkSource;
-        downloadLink.download = `${ime}.${ext}`;
+        downloadLink.download = `${imeFile}.${ext}`;
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
-
     } catch (err) {
-        console.error("Kritična greška:", err);
+        console.error("Greška:", err);
         alert("Greška pri generiranju datoteke.");
     }
 }
@@ -132,4 +143,21 @@ function iscrtajPaginaciju(ukupnoStranica, trenutna) {
     paginacijaDiv.appendChild(nextBtn);
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    const inputDokumenti = document.getElementById('searchDokumenti');
+    
+    if (inputDokumenti) {
+        inputDokumenti.addEventListener('keyup', function() {
+            const filter = inputDokumenti.value.toLowerCase();
+            const rows = document.querySelectorAll('#tablicaDokumenata tbody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => ucitajDokumente(0));
+
