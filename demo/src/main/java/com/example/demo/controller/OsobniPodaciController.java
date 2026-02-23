@@ -6,6 +6,8 @@ import com.example.demo.service.OsobniPodaciService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +34,13 @@ public class OsobniPodaciController {
     }
 
     @DeleteMapping("/{oib}")
-    public void delete(@PathVariable String oib) {
-        osobniPodaciService.delete(oib);
+    public ResponseEntity<?> obrisiKorisnika(@PathVariable String oib) {
+        try {
+            osobniPodaciService.deleteById(oib);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Greška pri brisanju: " + e.getMessage());
+        }
     }
     
     

@@ -55,9 +55,8 @@ async function ucitajDokumente(stranica = 0) {
                         <td>${puniNazivVlasnika}</td>
                         <td>${datum}</td>
                         <td>
-                            <button class="btn-preuzmi" onclick="pokreniPreuzimanje(${index})">
-                                Preuzmi
-                            </button>
+                            <button class="btn-preuzmi" onclick="pokreniPreuzimanje(${index})">Preuzmi </button>
+                            <button class="btn-obrisi" onclick="obrisiDokument(${doc.idDokument})">Obriši</button>
                         </td>
                     </tr>`;
                 body.insertAdjacentHTML('beforeend', red);
@@ -158,6 +157,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+async function obrisiDokument(id) {
+    console.log("Pokušavam obrisati dokument s ID-om:", id); 
+    
+    if (confirm("Jeste li sigurni da želite obrisati ovaj dokument?")) {
+        try {
+            const response = await fetch(`/api/dokument/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert("Dokument obrisan!");
+                location.reload(); 
+            } else {
+                const errorData = await response.text();
+                console.error("Server javlja grešku:", errorData);
+                alert("Greška: " + response.status);
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+        }
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => ucitajDokumente(0));
 

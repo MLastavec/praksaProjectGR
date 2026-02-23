@@ -62,7 +62,7 @@ public class OsobniPodaci {
     
     @JsonIgnore 
     @JsonManagedReference
-    @OneToMany(mappedBy = "osobniPodaci", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "osobniPodaci", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Dokument> dokumenti;
 
     public OsobniPodaci() {}

@@ -25,7 +25,10 @@ async function ucitajOsobnePodatke(stranica = 0) {
                     <td>${osoba.broj_telefona || ''}</td>
                     <td>${osoba.email || ''}</td>
                     <td>${osoba.korisnickoIme || ''}</td>
-                    <td><button onclick="otvoriUrediModal('${osoba.oib}')">Uredi</button></td>
+                    <td>
+                        <button onclick="otvoriUrediModal('${osoba.oib}')">Uredi</button>
+                        <button class="btn-obrisi" onclick="obrisiKorisnika('${osoba.oib}')">Obriši</button>
+                    </td>
                 </tr>
             `;
             tbody.innerHTML += red;
@@ -141,5 +144,20 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Nisam našao searchInput polje!");
     }
 });
+
+async function obrisiKorisnika(oib) {
+    if (confirm(`Jeste li sigurni da želite obrisati korisnika s OIB-om: ${oib}?`)) {
+        const response = await fetch(`/api/osobni-podaci/${oib}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            alert("Korisnik obrisan!");
+            location.reload(); 
+        } else {
+            alert("Greška pri brisanju.");
+        }
+    }
+}
 
 ucitajOsobnePodatke(0);

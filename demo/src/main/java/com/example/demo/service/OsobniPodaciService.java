@@ -156,4 +156,8 @@ public class OsobniPodaciService {
         return osobniPodaciRepository.findById(oib)
                 .orElseThrow(() -> new RuntimeException("Korisnik s OIB-om " + oib + " ne postoji."));
     }
+
+    public void deleteById(String oib) {
+        osobniPodaciRepository.deleteById(oib);
+    }
 }

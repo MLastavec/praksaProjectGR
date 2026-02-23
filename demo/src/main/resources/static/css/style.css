@@ -1,3 +1,4 @@
+/* OSNOVNI STILOV */
 body {
     font-family: 'Arial', sans-serif; 
     margin: 0;
@@ -6,6 +7,7 @@ body {
     color: #333;
 }
 
+/* NAVIGACIJA */
 nav {
     display: flex !important;
     justify-content: space-between; 
@@ -16,7 +18,6 @@ nav {
     width: 100%;
     box-sizing: border-box;
 }
-
 
 .nav-links {
     display: flex;
@@ -36,13 +37,14 @@ nav a {
     text-transform: uppercase;
     white-space: nowrap; 
 }
+
 nav a:hover {
     color: #f39200; 
 }
 
-
+/* KONTEJNERI I NASLOVI */
 .container {
-    max-width: 1000px;
+    max-width: 1200px; 
     margin: 50px auto;
     background: white;
     padding: 30px;
@@ -50,6 +52,27 @@ nav a:hover {
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
+h1 {
+    color: #004b33;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+h1::after {
+    content: '';
+    display: block;
+    width: 60px; 
+    height: 4px;
+    background-color: #f39200; 
+    margin: 10px auto 0; 
+    border-radius: 2px;
+}
 
 h2 {
     color: #004b33;
@@ -60,7 +83,7 @@ h2 {
     display: inline-block;
 }
 
-
+/* TABLICA */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -86,21 +109,97 @@ tr:hover {
     background-color: #f9f9f9;
 }
 
+/* STIL ZA GUMBE U TABLICI (AKCIJE) */
+td:last-child {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    align-items: center;
+    min-width: 160px;
+}
 
+/* OPĆENITI STIL GUMBA */
 button {
-    background-color: #004b33;
-    color: white;
-    border: none;
-    padding: 10px 20px;
     font-weight: bold;
     cursor: pointer;
     border-radius: 4px;
     transition: background 0.3s;
+    border: none;
+    padding: 10px 20px;
+    background-color: #004b33;
+    color: white;
 }
 
-button:hover {
-    background-color: #003625;
+.btn-refresh {
+    background-color: #004b33 !important;
+    color: white;
+    margin-bottom: 20px;
 }
+
+.btn-edit {
+    background-color: #004b33 !important;
+    color: white;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+}
+
+button:hover { opacity: 0.9; }
+
+/* INPUTI I SEARCH */
+input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#searchInput {
+    width: 250px;
+    margin-left: 15px;
+    margin-bottom: 20px;
+}
+
+/* PAGINACIJA */
+.paginacija {
+    display: flex !important;   
+    justify-content: center !important; 
+    align-items: center !important;
+    width: 100% !important;
+    margin: 30px auto !important; 
+    padding: 20px 0;
+}
+
+/* MODAL */
+#editModal {
+    border: none !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+    padding: 25px !important;
+}
+
+#editModal label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+    font-size: 14px;
+}
+
+#editModal input {
+    width: 100%;
+    margin-bottom: 15px;
+    box-sizing: border-box; 
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-spremi { background-color:#004b33 !important; color: white; }
+.btn-zatvori { background-color: #004b33 !important; color: white; }
+
 
 .form-group {
     margin-bottom: 15px;
@@ -114,85 +213,14 @@ button:hover {
     color: #333;
 }
 
-input {
+
+input[type="text"], 
+input[type="email"], 
+input[type="date"], 
+input[type="password"],
+input[type="tel"] {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    width: auto; 
 }
-
-
-h1 {
-    color: #004b33;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-top: 50px;
-    margin-bottom: 20px;
-    text-align: center;
-    position: relative;
-    padding-bottom: 15px;
-}
-
-
-h1::after {
-    content: '';
-    display: block;
-    width: 60px; 
-    height: 4px;
-    background-color: #f39200; 
-    margin: 10px auto 0; 
-    border-radius: 2px;
-}
-
-.paginacija {
-   display: flex !important;   
-    justify-content: center !important; 
-    align-items: center !important;
-    width: 100% !important;
-    margin: 30px auto !important; 
-    padding: 20px 0;
-    clear: both; 
-}
-
-#editModal {
-    /* Centriranje i sjena */
-    border: none !important;
-    border-radius: 15px !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
-    padding: 25px !important;
-}
-
-#editModal h3 {
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 22px;
-}
-
-#editModal label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #555;
-    font-size: 14px;
-}
-
-#editModal input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box; 
-    font-size: 15px;
-}
-
-
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.btn-spremi { background-color: #28a745 !important; }
-.btn-zatvori { background-color: #dc3545 !important; }

@@ -3,7 +3,10 @@ package com.example.demo.service;
 import com.example.demo.entity.Dokument;
 import com.example.demo.entity.OsobniPodaci;
 import com.example.demo.repository.DokumentRepository;
-import com.example.demo.repository.OsobniPodaciRepository; 
+import com.example.demo.repository.OsobniPodaciRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +47,7 @@ public class DokumentService {
         return dokumentRepository.save(dokument);
     } 
     
+    @Transactional
     public void delete(Integer id) {
         if (!dokumentRepository.existsById(id)) {
             throw new ResponseStatusException(
