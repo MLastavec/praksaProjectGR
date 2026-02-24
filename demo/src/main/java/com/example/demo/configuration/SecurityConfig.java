@@ -37,7 +37,8 @@ public class SecurityConfig {
                     "/api/korisnik/prijava",  
                     "/v3/api-docs/**",      
                     "/swagger-ui/**",       
-                    "/swagger-ui.html"      
+                    "/swagger-ui.html",
+                    "/arhiva.html"      
                 ).permitAll() 
                 .anyRequest().authenticated() 
             )

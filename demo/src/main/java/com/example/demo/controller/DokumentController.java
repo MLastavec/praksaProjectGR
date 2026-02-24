@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,5 +43,23 @@ public class DokumentController {
         @RequestParam(defaultValue = "0") int stranica
     ) {
         return dokumentService.dohvatiDokumenteStraniceno(auth, stranica);
+    }
+
+    
+    @GetMapping("/arhiva")
+    public List<Dokument> getArhivaDokumenata() {
+        return dokumentService.dohvatiArhivu();
+    }
+
+    
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<?> vratiDokument(@PathVariable Integer id) { 
+        try {
+            dokumentService.restoreDokument(id);
+            return ResponseEntity.ok().body("{\"message\": \"Dokument uspješno vraćen!\"}");
+        } catch (Exception e) {
+            e.printStackTrace(); 
+            return ResponseEntity.status(500).body("Greška: " + e.getMessage());
+        }
     }
 }

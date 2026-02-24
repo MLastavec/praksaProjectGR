@@ -32,5 +32,9 @@ public class IndexController {
         return "forward:/html/registracija.html";
     }
     
+    @GetMapping("/arhiva")
+    public String prikaziArhivu() {
+        return "forward:/html/arhiva.html";
+    }
     
 }

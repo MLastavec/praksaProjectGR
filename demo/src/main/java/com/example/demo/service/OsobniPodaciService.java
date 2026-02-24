@@ -62,12 +62,6 @@ public class OsobniPodaciService {
         return osobniPodaciRepository.save(osobniPodaci);
     }
 
-    public void delete(String oib) { 
-       if (!osobniPodaciRepository.existsById(oib)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Osoba s OIB-om " + oib + " ne postoji!");
-       }
-       osobniPodaciRepository.deleteById(oib);
-    }
 
     @Transactional
     public OsobniPodaci spremiSve(RegistracijaDTO dto, MultipartFile f1, MultipartFile f2, MultipartFile f3, MultipartFile f4) throws IOException {
@@ -157,7 +151,25 @@ public class OsobniPodaciService {
                 .orElseThrow(() -> new RuntimeException("Korisnik s OIB-om " + oib + " ne postoji."));
     }
 
+   
+    @Transactional
     public void deleteById(String oib) {
-        osobniPodaciRepository.deleteById(oib);
+        osobniPodaciRepository.findById(oib).ifPresent(osoba -> {
+            osoba.setObrisan(true);
+            osobniPodaciRepository.saveAndFlush(osoba);
+        });
+    }
+
+    public List<OsobniPodaci> dohvatiSveObrisane() {
+    return osobniPodaciRepository.dohvatiSveObrisaneNative();
+    }
+
+   @Transactional
+    public void restoreById(String oib) {
+        OsobniPodaci osoba = osobniPodaciRepository.findByOibIgnoreRestriction(oib) 
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Korisnik nije u arhivi"));
+
+        osoba.setObrisan(false);
+        osobniPodaciRepository.saveAndFlush(osoba);
     }
 }

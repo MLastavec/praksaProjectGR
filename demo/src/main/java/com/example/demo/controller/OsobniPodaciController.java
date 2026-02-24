@@ -3,11 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.entity.OsobniPodaci;
 import com.example.demo.service.OsobniPodaciService;
 
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -33,16 +33,17 @@ public class OsobniPodaciController {
         return osobniPodaciService.dohvatiStraniceno(stranica, 10);
     }
 
-    @DeleteMapping("/{oib}")
+   @DeleteMapping("/{oib}")
     public ResponseEntity<?> obrisiKorisnika(@PathVariable String oib) {
         try {
-            osobniPodaciService.deleteById(oib);
-            return ResponseEntity.ok().build();
+            System.out.println("Pokušavam obrisati korisnika: " + oib);
+            osobniPodaciService.deleteById(oib); 
+            return ResponseEntity.ok().body("Korisnik uspješno obrisan (logički).");
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Greška pri brisanju: " + e.getMessage());
+            e.printStackTrace(); 
+            return ResponseEntity.status(500).body("Greška na serveru: " + e.getMessage());
         }
     }
-    
     
     @GetMapping("/auth-status")
     @ResponseBody
@@ -59,5 +60,21 @@ public class OsobniPodaciController {
     public OsobniPodaci azuriraj(@PathVariable String oib, @RequestBody OsobniPodaci noviPodaci) {
         System.out.println("Primljen zahtjev za OIB: " + oib);
         return osobniPodaciService.azurirajKorisnika(oib, noviPodaci);
+    }
+
+    @GetMapping("/podaci-arhive")
+    public List<OsobniPodaci> getArhivaPodaci() {
+        return osobniPodaciService.dohvatiSveObrisane();
+    }
+
+
+    @PostMapping("/{oib}/restore")
+    public ResponseEntity<?> vratiKorisnika(@PathVariable String oib) {
+        try {
+            osobniPodaciService.restoreById(oib);
+            return ResponseEntity.ok().body("Korisnik vraćen!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Greška: " + e.getMessage());
+        }
     }
 }

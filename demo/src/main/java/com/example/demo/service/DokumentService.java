@@ -49,13 +49,10 @@ public class DokumentService {
     
     @Transactional
     public void delete(Integer id) {
-        if (!dokumentRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, 
-                "Greška pri brisanju: Dokument s ID-em " + id + " ne postoji!"
-            );
-        }
-        dokumentRepository.deleteById(id);
+        Dokument dokument = dokumentRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dokument nije pronađen"));
+        dokument.setObrisan(true);
+        dokumentRepository.save(dokument);
     }
 
     public List<Dokument> dohvatiDokumenteOvisnoOUlozi(Authentication auth) {
@@ -91,4 +88,19 @@ public class DokumentService {
                 .orElse(Page.empty());
     }
 }
+
+    @Transactional
+    public void restoreDokument(Integer id) { 
+        Dokument dokument = dokumentRepository.findByIdIgnoreRestriction(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dokument nije pronađen"));
+        
+        dokument.setObrisan(false);
+        dokumentRepository.save(dokument);
+    }
+
+    public List<Dokument> dohvatiArhivu() {
+        return dokumentRepository.dohvatiSveObrisaneNative();
+    }
+
+
 }

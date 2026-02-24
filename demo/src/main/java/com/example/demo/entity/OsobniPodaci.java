@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "osobni_podaci")
+@SQLRestriction("obrisan = 0")
 public class OsobniPodaci {
 
     @Id
@@ -55,6 +57,9 @@ public class OsobniPodaci {
     @CreationTimestamp
     @Column(name = "datum_kreiranja", updatable = false, nullable = false)
     private LocalDateTime datumKreiranja;
+
+    @Column(name = "obrisan")
+    private boolean obrisan = false;
 
     @ManyToOne
     @JoinColumn(name = "uloga_iduloga")
@@ -104,6 +109,9 @@ public class OsobniPodaci {
 
     public List<Dokument> getDokumenti() { return dokumenti; }
     public void setDokumenti(List<Dokument> dokumenti) { this.dokumenti = dokumenti; }
+
+    public boolean isObrisan() { return obrisan; }
+    public void setObrisan(boolean obrisan) { this.obrisan = obrisan; }
 
 }
 
