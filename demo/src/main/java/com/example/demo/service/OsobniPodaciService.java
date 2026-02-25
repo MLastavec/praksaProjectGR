@@ -59,6 +59,14 @@ public class OsobniPodaciService {
         if (osobniPodaciRepository.existsById(osobniPodaci.getOib())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Osoba s OIB-om " + osobniPodaci.getOib() + " već postoji!");
         }
+        if (osobniPodaci.getUloga() == null) {
+            Uloga ulogaKorisnik = ulogaRepository.findById(1)
+                    .orElseThrow(() -> new RuntimeException("Uloga ROLE_USER nije pronađena!"));
+                osobniPodaci.setUloga(ulogaKorisnik);
+        }
+        if (osobniPodaci.getLozinka() == null || osobniPodaci.getLozinka().isEmpty()) {
+            osobniPodaci.setLozinka("privremena123"); 
+        }
         return osobniPodaciRepository.save(osobniPodaci);
     }
 

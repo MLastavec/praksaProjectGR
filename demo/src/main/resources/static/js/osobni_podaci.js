@@ -160,4 +160,54 @@ async function obrisiKorisnika(oib) {
     }
 }
 
+
+function otvoriModalDodavanja() {
+    document.getElementById('dodajKorisnikaModal').style.display = 'block';
+    document.getElementById('modalOverlay').style.display = 'block';
+}
+
+function zatvoriModalDodavanja() {
+    document.getElementById('dodajKorisnikaModal').style.display = 'none';
+    document.getElementById('modalOverlay').style.display = 'none';
+    document.getElementById('dodajKorisnikaForm').reset(); // Čisti formu
+}
+
+
+document.getElementById('dodajKorisnikaForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const noviKorisnik = {
+        oib: document.getElementById('novoOib').value,
+        ime: document.getElementById('novoIme').value,
+        prezime: document.getElementById('novoPrezime').value,
+        datumRodjenja: document.getElementById('novoDatumRodjenja').value,
+        adresa: document.getElementById('novoAdresa').value,
+        brojTelefona: document.getElementById('novoTelefon').value,
+        email: document.getElementById('novoEmail').value,
+        korisnickoIme: document.getElementById('novoKorisnickoIme').value
+    };
+
+    try {
+        const response = await fetch('/api/osobni-podaci', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(noviKorisnik)
+        });
+
+        if (response.ok) {
+            alert("Korisnik uspješno dodan!");
+            zatvoriModalDodavanja();
+            ucitajOsobnePodatke(); 
+        } else {
+            const error = await response.text();
+            alert("Greška: " + error);
+        }
+    } catch (err) {
+        console.error("Fetch error:", err);
+        alert("Došlo je do pogreške pri komunikaciji sa serverom.");
+    }
+});
+
 ucitajOsobnePodatke(0);

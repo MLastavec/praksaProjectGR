@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/osobni-podaci")
@@ -75,6 +76,18 @@ public class OsobniPodaciController {
             return ResponseEntity.ok().body("Korisnik vraćen!");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Greška: " + e.getMessage());
+        }
+    }
+
+   @PostMapping
+    public ResponseEntity<?> create(@RequestBody OsobniPodaci noviKorisnik) {
+        try {
+            OsobniPodaci spremljeno = osobniPodaciService.create(noviKorisnik);
+            return ResponseEntity.ok(spremljeno);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Greška pri spremanju: " + e.getMessage());
         }
     }
 }
