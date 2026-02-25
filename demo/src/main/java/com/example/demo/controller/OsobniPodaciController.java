@@ -79,7 +79,7 @@ public class OsobniPodaciController {
         }
     }
 
-   @PostMapping
+    @PostMapping
     public ResponseEntity<?> create(@RequestBody OsobniPodaci noviKorisnik) {
         try {
             OsobniPodaci spremljeno = osobniPodaciService.create(noviKorisnik);
@@ -89,5 +89,13 @@ public class OsobniPodaciController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Greška pri spremanju: " + e.getMessage());
         }
+    }
+
+   @GetMapping("/trenutna-uloga")
+    public String getTrenutnaUloga(Authentication auth) {
+        if (auth != null && auth.getName().equals("lanic")) {
+            return "ADMIN";
+        }
+        return "USER";
     }
 }

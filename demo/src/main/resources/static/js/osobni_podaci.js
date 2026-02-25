@@ -5,6 +5,14 @@ async function ucitajOsobnePodatke(stranica = 0) {
     try {
         trenutnaStranica = stranica;
 
+        const ulogaRes = await fetch('/api/osobni-podaci/trenutna-uloga');
+        const uloga = await ulogaRes.text();
+
+        const btnDodaj = document.querySelector('button[onclick="otvoriModalDodavanja()"]');
+        if (btnDodaj) {
+            btnDodaj.style.display = (uloga === 'ADMIN') ? 'inline-block' : 'none';
+        }
+
         const response = await fetch(`/api/osobni-podaci/moj-pregled?stranica=${stranica}`);
         if (!response.ok) throw new Error('Problem s dohvatom podataka');
 
@@ -15,6 +23,14 @@ async function ucitajOsobnePodatke(stranica = 0) {
         tbody.innerHTML = ''; 
 
         data.content.forEach(osoba => {
+            let akcijeHtml = '—';
+            if (uloga === 'ADMIN') {
+                akcijeHtml = `
+                    <button onclick="otvoriUrediModal('${osoba.oib}')">Uredi</button>
+                    <button class="btn-obrisi" onclick="obrisiKorisnika('${osoba.oib}')">Obriši</button>
+                `;
+            }
+
             const red = `
                 <tr>
                     <td><strong>${osoba.oib}</strong></td>
@@ -25,10 +41,7 @@ async function ucitajOsobnePodatke(stranica = 0) {
                     <td>${osoba.broj_telefona || ''}</td>
                     <td>${osoba.email || ''}</td>
                     <td>${osoba.korisnickoIme || ''}</td>
-                    <td>
-                        <button onclick="otvoriUrediModal('${osoba.oib}')">Uredi</button>
-                        <button class="btn-obrisi" onclick="obrisiKorisnika('${osoba.oib}')">Obriši</button>
-                    </td>
+                    <td>${akcijeHtml}</td>
                 </tr>
             `;
             tbody.innerHTML += red;
@@ -37,7 +50,7 @@ async function ucitajOsobnePodatke(stranica = 0) {
         osvjeziNavigaciju(data.totalPages, data.number);
 
     } catch (error) {
-        console.error(error);
+        console.error("Greška pri učitavanju:", error);
     }
 }
 
@@ -53,44 +66,30 @@ function osvjeziNavigaciju(ukupnoStranica, trenutna) {
 }
 
 async function otvoriUrediModal(oib) {
-    console.log("1. Kliknut gumb za OIB:", oib); 
-    
     try {
         const response = await fetch(`/api/osobni-podaci/${oib}`);
-        console.log("2. Odgovor servera status:", response.status);
-
-        if (!response.ok) throw new Error('Korisnik nije pronađen na serveru');
+        if (!response.ok) throw new Error('Korisnik nije pronađen');
 
         const osoba = await response.json();
-        console.log("3. Podaci stigli:", osoba);
-
         const modal = document.getElementById('editModal');
-        if (!modal) {
-            alert("GREŠKA: JavaScript ne vidi 'editModal'. Provjeri HTML id!");
-            return;
-        }
+        if (!modal) return;
+
         trenutnaOsoba = osoba;
-        if (document.getElementById('editOib')) document.getElementById('editOib').value = osoba.oib || '';
-        if (document.getElementById('editIme')) document.getElementById('editIme').value = osoba.ime || '';
-        if (document.getElementById('editPrezime')) document.getElementById('editPrezime').value = osoba.prezime || '';
-        if (document.getElementById('editAdresa')) document.getElementById('editAdresa').value = osoba.adresa || '';
-        if (document.getElementById('editTelefon')) document.getElementById('editTelefon').value = osoba.broj_telefona || '';
-        if (document.getElementById('editEmail')) document.getElementById('editEmail').value = osoba.email || '';
+        document.getElementById('editOib').value = osoba.oib || '';
+        document.getElementById('editIme').value = osoba.ime || '';
+        document.getElementById('editPrezime').value = osoba.prezime || '';
+        document.getElementById('editAdresa').value = osoba.adresa || '';
+        document.getElementById('editTelefon').value = osoba.broj_telefona || '';
+        document.getElementById('editEmail').value = osoba.email || '';
 
-        console.log("4. Pokušavam prikazati modal...");
         modal.style.display = 'block';
-        modal.style.visibility = 'visible'; 
-        modal.style.opacity = '1';
-
     } catch (error) {
-        console.error("Kritična greška:", error);
-        alert("Nešto je puklo: " + error.message);
+        alert("Greška: " + error.message);
     }
 }
 
 async function spremiPromjene() {
     const oib = document.getElementById('editOib').value;
-
     const podaci = {
         oib: oib,
         ime: document.getElementById('editIme').value,
@@ -103,10 +102,7 @@ async function spremiPromjene() {
     try {
         const response = await fetch(`/api/osobni-podaci/${oib}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(podaci)
         });
 
@@ -114,43 +110,16 @@ async function spremiPromjene() {
             alert("Uspješno spremljeno!");
             location.reload();
         } else {
-            const errorText = await response.text();
-            alert("Server vratio grešku: " + errorText);
+            alert("Greška pri spremanju.");
         }
     } catch (e) {
         console.error(e);
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function() {
-            const filter = searchInput.value.toLowerCase();
-            const rows = document.querySelectorAll('#tablicaKorisnika tbody tr');
-
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                if (text.includes(filter)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-        console.log("Filtriranje spremno!");
-    } else {
-        console.error("Nisam našao searchInput polje!");
-    }
-});
-
 async function obrisiKorisnika(oib) {
     if (confirm(`Jeste li sigurni da želite obrisati korisnika s OIB-om: ${oib}?`)) {
-        const response = await fetch(`/api/osobni-podaci/${oib}`, {
-            method: 'DELETE'
-        });
-
+        const response = await fetch(`/api/osobni-podaci/${oib}`, { method: 'DELETE' });
         if (response.ok) {
             alert("Korisnik obrisan!");
             location.reload(); 
@@ -160,7 +129,6 @@ async function obrisiKorisnika(oib) {
     }
 }
 
-
 function otvoriModalDodavanja() {
     document.getElementById('dodajKorisnikaModal').style.display = 'block';
     document.getElementById('modalOverlay').style.display = 'block';
@@ -169,44 +137,57 @@ function otvoriModalDodavanja() {
 function zatvoriModalDodavanja() {
     document.getElementById('dodajKorisnikaModal').style.display = 'none';
     document.getElementById('modalOverlay').style.display = 'none';
-    document.getElementById('dodajKorisnikaForm').reset(); // Čisti formu
+    document.getElementById('dodajKorisnikaForm').reset();
 }
 
 
-document.getElementById('dodajKorisnikaForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+const formaDodaj = document.getElementById('dodajKorisnikaForm');
+if (formaDodaj) {
+    formaDodaj.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const noviKorisnik = {
+            oib: document.getElementById('novoOib').value,
+            ime: document.getElementById('novoIme').value,
+            prezime: document.getElementById('novoPrezime').value,
+            datumRodjenja: document.getElementById('novoDatumRodjenja').value,
+            adresa: document.getElementById('novoAdresa').value,
+            brojTelefona: document.getElementById('novoTelefon').value,
+            email: document.getElementById('novoEmail').value,
+            korisnickoIme: document.getElementById('novoKorisnickoIme').value
+        };
 
-    const noviKorisnik = {
-        oib: document.getElementById('novoOib').value,
-        ime: document.getElementById('novoIme').value,
-        prezime: document.getElementById('novoPrezime').value,
-        datumRodjenja: document.getElementById('novoDatumRodjenja').value,
-        adresa: document.getElementById('novoAdresa').value,
-        brojTelefona: document.getElementById('novoTelefon').value,
-        email: document.getElementById('novoEmail').value,
-        korisnickoIme: document.getElementById('novoKorisnickoIme').value
-    };
+        try {
+            const response = await fetch('/api/osobni-podaci', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(noviKorisnik)
+            });
 
-    try {
-        const response = await fetch('/api/osobni-podaci', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(noviKorisnik)
-        });
-
-        if (response.ok) {
-            alert("Korisnik uspješno dodan!");
-            zatvoriModalDodavanja();
-            ucitajOsobnePodatke(); 
-        } else {
-            const error = await response.text();
-            alert("Greška: " + error);
+            if (response.ok) {
+                alert("Korisnik uspješno dodan!");
+                zatvoriModalDodavanja();
+                ucitajOsobnePodatke(); 
+            } else {
+                const msg = await response.text();
+                alert("Greška: " + msg);
+            }
+        } catch (err) {
+            console.error(err);
         }
-    } catch (err) {
-        console.error("Fetch error:", err);
-        alert("Došlo je do pogreške pri komunikaciji sa serverom.");
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const filter = searchInput.value.toLowerCase();
+            const rows = document.querySelectorAll('#tablicaKorisnika tbody tr');
+            rows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        });
     }
 });
 

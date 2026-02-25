@@ -33,7 +33,7 @@ public class Dokument {
     private OsobniPodaci osobniPodaci;
 
     @JsonIgnore 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "files_blob_id_files_blob")
     private FilesBlob filesBlob;
 

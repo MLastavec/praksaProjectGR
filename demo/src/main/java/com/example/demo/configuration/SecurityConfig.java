@@ -2,6 +2,7 @@ package com.example.demo.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,30 +18,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) 
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.POST, "/api/registracija/**").permitAll()
                 .requestMatchers(
                     "/", 
                     "/index.html", 
-                    "/osobnipodaci",
-                    "/dokumenti",
                     "/html/**", 
                     "/js/**", 
-                    "/css/**",
-                    "/images/**",
+                    "/css/**", 
+                    "/images/**", 
                     "/favicon.ico",
                     "/prijava",
                     "/prijava.html",
                     "/registracija",
                     "/registracija.html",
-                    "/api/registracija/**",   
-                    "/api/korisnik/prijava",  
-                    "/v3/api-docs/**",      
-                    "/swagger-ui/**",       
-                    "/swagger-ui.html",
-                    "/arhiva.html"      
-                ).permitAll() 
-                .anyRequest().authenticated() 
+                    "/api/registracija/**",
+                    "api/registracija/registracija",
+                    "/api/korisnik/prijava",
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html"
+                ).permitAll()
+                .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/html/prijava.html") 
@@ -60,13 +60,9 @@ public class SecurityConfig {
                     response.setContentType("application/json;charset=UTF-8");
 
                     String authHeader = request.getHeader("Authorization");
-                    String poruka;
-
-                    if (authHeader == null) {
-                        poruka = "Niste prijavljeni. Prijavite se svojim korisničkim imenom i lozinkom!";
-                    } else {
-                        poruka = "Korisničko ime ili lozinka nisu ispravni. Ponovite prijavu!";
-                    }
+                    String poruka = (authHeader == null) 
+                        ? "Niste prijavljeni. Prijavite se!" 
+                        : "Korisničko ime ili lozinka nisu ispravni.";
 
                     String jsonResponse = String.format(
                         "{\"status\": 401, \"greska\": \"Neautoriziran pristup\", \"detalji\": \"%s\"}", 

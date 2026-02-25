@@ -16,6 +16,9 @@ async function ucitajDokumente(stranica = 0) {
     body.innerHTML = '<tr><td colspan="6">Učitavanje...</td></tr>';
 
     try {
+        const ulogaRes = await fetch('/api/osobni-podaci/trenutna-uloga');
+        const uloga = await ulogaRes.text();
+
         const response = await fetch(`/api/dokument/moj-pregled?stranica=${stranica}`);
         if (!response.ok) throw new Error(`Status: ${response.status}`);
 
@@ -31,18 +34,16 @@ async function ucitajDokumente(stranica = 0) {
                 
                 const oib = doc.osobniPodaciOib || (doc.osobniPodaci ? doc.osobniPodaci.oib : 'Nije dodijeljeno');
   
-                let ime = doc.ime;
-                let prezime = doc.prezime;
-
-                if (!ime && doc.osobniPodaci) {
-                    ime = doc.osobniPodaci.ime;
-                    prezime = doc.osobniPodaci.prezime;
-                }
-
-                const puniNazivVlasnika = ime ? `${ime} ${prezime || ''}` : 'Nepoznato';
+                let ime = doc.ime || (doc.osobniPodaci ? doc.osobniPodaci.ime : '');
+                let prezime = doc.prezime || (doc.osobniPodaci ? doc.osobniPodaci.prezime : '');
+                const puniNazivVlasnika = ime ? `${ime} ${prezime}` : 'Nepoznato';
                 
-                // 4. Formatiranje datuma
                 const datum = doc.datumKreiranja ? new Date(doc.datumKreiranja).toLocaleDateString('hr-HR') : '-';
+
+                let akcijeHtml = `<button class="btn-preuzmi" onclick="pokreniPreuzimanje(${index})">Preuzmi</button>`;
+                if (uloga === 'ADMIN') {
+                    akcijeHtml += ` <button class="btn-obrisi" onclick="obrisiDokument(${doc.idDokument})">Obriši</button>`;
+                }
 
                 const red = `
                     <tr>
@@ -54,10 +55,7 @@ async function ucitajDokumente(stranica = 0) {
                         <td style="font-weight:bold;">${oib}</td>
                         <td>${puniNazivVlasnika}</td>
                         <td>${datum}</td>
-                        <td>
-                            <button class="btn-preuzmi" onclick="pokreniPreuzimanje(${index})">Preuzmi </button>
-                            <button class="btn-obrisi" onclick="obrisiDokument(${doc.idDokument})">Obriši</button>
-                        </td>
+                        <td>${akcijeHtml}</td>
                     </tr>`;
                 body.insertAdjacentHTML('beforeend', red);
             });
@@ -82,37 +80,21 @@ function preuzmiDokument(base64Data, nazivDatoteke) {
         alert("Podaci o datoteci su prazni.");
         return;
     }
-
     try {
         let finalBase64 = String(base64Data).trim();
         let mimeType = "application/pdf";
 
-        try {
-            window.atob(finalBase64); 
-        } catch (e) {
-            finalBase64 = btoa(finalBase64);
-            mimeType = "text/plain";
-        }
-
-        if (mimeType !== "text/plain") {
-            if (finalBase64.startsWith("JVBERi")) mimeType = "application/pdf";
-            else if (finalBase64.startsWith("iVBORw")) mimeType = "image/png";
-            else if (finalBase64.startsWith("/9j/")) mimeType = "image/jpeg";
-        }
+        if (finalBase64.startsWith("JVBERi")) mimeType = "application/pdf";
+        else if (finalBase64.startsWith("iVBORw")) mimeType = "image/png";
+        else if (finalBase64.startsWith("/9j/")) mimeType = "image/jpeg";
 
         const linkSource = `data:${mimeType};base64,${finalBase64}`;
         const downloadLink = document.createElement("a");
-        let ext = mimeType.split("/")[1].replace("plain", "txt").replace("jpeg", "jpg");
-        let imeFile = nazivDatoteke ? nazivDatoteke.split('.')[0] : "dokument";
-        
         downloadLink.href = linkSource;
-        downloadLink.download = `${imeFile}.${ext}`;
-        document.body.appendChild(downloadLink);
+        downloadLink.download = nazivDatoteke || "dokument";
         downloadLink.click();
-        document.body.removeChild(downloadLink);
     } catch (err) {
         console.error("Greška:", err);
-        alert("Greška pri generiranju datoteke.");
     }
 }
 
@@ -120,63 +102,35 @@ function iscrtajPaginaciju(ukupnoStranica, trenutna) {
     const paginacijaDiv = document.getElementById('paginacijaDokumenti');
     if (!paginacijaDiv) return;
     
-    paginacijaDiv.innerHTML = '';
-
-    const prevBtn = document.createElement('button');
-    prevBtn.innerText = 'Prethodna';
-    prevBtn.className = 'btn-paginacija';
-    prevBtn.disabled = (trenutna === 0);
-    prevBtn.onclick = () => ucitajDokumente(trenutna - 1);
-    paginacijaDiv.appendChild(prevBtn);
-
-    const span = document.createElement('span');
-    span.style.margin = "0 15px";
-    span.innerText = ` Stranica ${trenutna + 1} od ${ukupnoStranica} `;
-    paginacijaDiv.appendChild(span);
-
-    const nextBtn = document.createElement('button');
-    nextBtn.innerText = 'Sljedeća';
-    nextBtn.className = 'btn-paginacija';
-    nextBtn.disabled = (trenutna >= (ukupnoStranica - 1));
-    nextBtn.onclick = () => ucitajDokumente(trenutna + 1);
-    paginacijaDiv.appendChild(nextBtn);
+    paginacijaDiv.innerHTML = `
+        <button onclick="ucitajDokumente(${trenutna - 1})" ${trenutna === 0 ? 'disabled' : ''}>Prethodna</button>
+        <span style="margin: 0 15px;"> Stranica ${trenutna + 1} od ${ukupnoStranica} </span>
+        <button onclick="ucitajDokumente(${trenutna + 1})" ${trenutna + 1 >= (ukupnoStranica) ? 'disabled' : ''}>Sljedeća</button>
+    `;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     const inputDokumenti = document.getElementById('searchDokumenti');
-    
     if (inputDokumenti) {
         inputDokumenti.addEventListener('keyup', function() {
             const filter = inputDokumenti.value.toLowerCase();
             const rows = document.querySelectorAll('#tablicaDokumenata tbody tr');
-
             rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
+                row.style.display = row.innerText.toLowerCase().includes(filter) ? '' : 'none';
             });
         });
     }
 });
 
 async function obrisiDokument(id) {
-    console.log("Pokušavam obrisati dokument s ID-om:", id); 
-    
     if (confirm("Jeste li sigurni da želite obrisati ovaj dokument?")) {
         try {
-            const response = await fetch(`/api/dokument/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
+            const response = await fetch(`/api/dokument/${id}`, { method: 'DELETE' });
             if (response.ok) {
                 alert("Dokument obrisan!");
                 location.reload(); 
             } else {
-                const errorData = await response.text();
-                console.error("Server javlja grešku:", errorData);
-                alert("Greška: " + response.status);
+                alert("Greška pri brisanju: " + response.status);
             }
         } catch (error) {
             console.error("Fetch error:", error);
@@ -185,4 +139,3 @@ async function obrisiDokument(id) {
 }
 
 document.addEventListener('DOMContentLoaded', () => ucitajDokumente(0));
-
