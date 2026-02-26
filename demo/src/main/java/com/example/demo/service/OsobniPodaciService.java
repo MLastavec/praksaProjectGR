@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication; 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +41,9 @@ public class OsobniPodaciService {
     @Autowired
     private UlogaRepository ulogaRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public List<OsobniPodaci> getAll() {
         return osobniPodaciRepository.findAll();
     }
@@ -59,17 +63,20 @@ public class OsobniPodaciService {
         if (osobniPodaciRepository.existsById(osobniPodaci.getOib())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Osoba s OIB-om " + osobniPodaci.getOib() + " već postoji!");
         }
+        
         if (osobniPodaci.getUloga() == null) {
             Uloga ulogaKorisnik = ulogaRepository.findById(1)
                     .orElseThrow(() -> new RuntimeException("Uloga ROLE_USER nije pronađena!"));
                 osobniPodaci.setUloga(ulogaKorisnik);
         }
-        if (osobniPodaci.getLozinka() == null || osobniPodaci.getLozinka().isEmpty()) {
-            osobniPodaci.setLozinka("privremena123"); 
-        }
+
+        String rawLozinka = (osobniPodaci.getLozinka() == null || osobniPodaci.getLozinka().isEmpty()) 
+                            ? "privremena123" 
+                            : osobniPodaci.getLozinka();
+        osobniPodaci.setLozinka(passwordEncoder.encode(rawLozinka));
+
         return osobniPodaciRepository.save(osobniPodaci);
     }
-
 
     @Transactional
     public OsobniPodaci spremiSve(RegistracijaDTO dto, MultipartFile f1, MultipartFile f2, MultipartFile f3, MultipartFile f4) throws IOException {
@@ -87,7 +94,9 @@ public class OsobniPodaciService {
         osoba.setEmail(dto.email);
         osoba.setBroj_telefona(dto.brojTelefona);
         osoba.setKorisnickoIme(dto.korisnickoIme);
-        osoba.setLozinka(dto.lozinka);
+        
+        
+        osoba.setLozinka(passwordEncoder.encode(dto.lozinka));
 
         Uloga ulogaKorisnik = ulogaRepository.findById(1)
                 .orElseThrow(() -> new RuntimeException("Uloga s ID 1 nije pronađena!"));
@@ -98,18 +107,18 @@ public class OsobniPodaciService {
         int[] vrsteIds = {1, 3, 4, 5}; 
 
         for (int idx = 0; idx < files.length; idx++) {
-            final int i = idx;
-            if (files[i] != null && !files[i].isEmpty()) {
+            if (files[idx] != null && !files[idx].isEmpty()) {
+                final int finalIdx = idx;
                 Dokument d = new Dokument();
-                d.setNazivDokumenta(files[i].getOriginalFilename());
+                d.setNazivDokumenta(files[idx].getOriginalFilename());
                 d.setOsobniPodaci(osoba);
 
                 FilesBlob fb = new FilesBlob();
-                fb.setDokument(files[i].getBytes()); 
+                fb.setDokument(files[idx].getBytes()); 
                 d.setFilesBlob(fb);
 
-                VrstaDokumenta vd = vrstaDokumentaRepository.findById(vrsteIds[i])
-                        .orElseThrow(() -> new RuntimeException("Vrsta dokumenta ID " + vrsteIds[i] + " ne postoji!"));
+                VrstaDokumenta vd = vrstaDokumentaRepository.findById(vrsteIds[finalIdx])
+                        .orElseThrow(() -> new RuntimeException("Vrsta dokumenta ID " + vrsteIds[finalIdx] + " ne postoji!"));
                 d.setVrstaDokumenta(vd);
 
                 listaDokumenata.add(d);
@@ -142,7 +151,7 @@ public class OsobniPodaciService {
         }
     }
 
-   public OsobniPodaci azurirajKorisnika(String oib, OsobniPodaci noviPodaci) {
+    public OsobniPodaci azurirajKorisnika(String oib, OsobniPodaci noviPodaci) {
         OsobniPodaci postojeci = osobniPodaciRepository.findById(oib)
                 .orElseThrow(() -> new RuntimeException("Korisnik s OIB-om " + oib + " ne postoji."));
         postojeci.setIme(noviPodaci.getIme());
@@ -159,7 +168,6 @@ public class OsobniPodaciService {
                 .orElseThrow(() -> new RuntimeException("Korisnik s OIB-om " + oib + " ne postoji."));
     }
 
-   
     @Transactional
     public void deleteById(String oib) {
         osobniPodaciRepository.findById(oib).ifPresent(osoba -> {
@@ -169,10 +177,10 @@ public class OsobniPodaciService {
     }
 
     public List<OsobniPodaci> dohvatiSveObrisane() {
-    return osobniPodaciRepository.dohvatiSveObrisaneNative();
+        return osobniPodaciRepository.dohvatiSveObrisaneNative();
     }
 
-   @Transactional
+    @Transactional
     public void restoreById(String oib) {
         OsobniPodaci osoba = osobniPodaciRepository.findByOibIgnoreRestriction(oib) 
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Korisnik nije u arhivi"));
