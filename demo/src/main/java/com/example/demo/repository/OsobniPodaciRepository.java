@@ -28,4 +28,5 @@ public interface OsobniPodaciRepository extends JpaRepository<OsobniPodaci, Stri
     List<OsobniPodaci> dohvatiSveObrisaneNative();
     @Query(value = "SELECT * FROM osobni_podaci WHERE oib = :oib", nativeQuery = true)
     Optional<OsobniPodaci> findByOibIgnoreRestriction(@Param("oib") String oib);
+    boolean existsByEmail(String email);
 }

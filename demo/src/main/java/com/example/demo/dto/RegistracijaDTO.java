@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 public class RegistracijaDTO {
     
     public String oib;
@@ -19,7 +20,7 @@ public class RegistracijaDTO {
     public String uloga;
     public List<DokumentDTO> dokumenti;
 
-     public String getOib() { return oib; }
+    public String getOib() { return oib; }
     public void setOib(String oib) { this.oib = oib; }
 
     public String getIme() { return ime; }

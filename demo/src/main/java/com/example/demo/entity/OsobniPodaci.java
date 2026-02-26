@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -30,6 +31,7 @@ public class OsobniPodaci {
     @Schema(description = "Prezime korisnika", example = "Horvat")
     private String prezime;
     
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "datum_rodenja")
     @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd") 
     private LocalDate datum_rodenja;

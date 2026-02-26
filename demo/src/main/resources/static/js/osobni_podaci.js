@@ -149,9 +149,9 @@ if (formaDodaj) {
             oib: document.getElementById('novoOib').value,
             ime: document.getElementById('novoIme').value,
             prezime: document.getElementById('novoPrezime').value,
-            datumRodjenja: document.getElementById('novoDatumRodjenja').value,
+            datum_rodenja: datumInput.value,
             adresa: document.getElementById('novoAdresa').value,
-            brojTelefona: document.getElementById('novoTelefon').value,
+            broj_telefona: document.getElementById('novoTelefon').value,
             email: document.getElementById('novoEmail').value,
             korisnickoIme: document.getElementById('novoKorisnickoIme').value
         };

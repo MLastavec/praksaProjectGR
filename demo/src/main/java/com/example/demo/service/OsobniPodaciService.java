@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,6 +64,30 @@ public class OsobniPodaciService {
         if (osobniPodaciRepository.existsById(osobniPodaci.getOib())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Osoba s OIB-om " + osobniPodaci.getOib() + " već postoji!");
         }
+        if (osobniPodaci.getKorisnickoIme() == null || osobniPodaci.getKorisnickoIme().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Korisničko ime ne smije biti prazno!");
+        }
+        if (osobniPodaciRepository.existsByKorisnickoIme(osobniPodaci.getKorisnickoIme())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Korisničko ime '" + osobniPodaci.getKorisnickoIme() + "' je zauzeto!");
+        }
+        if (osobniPodaci.getEmail() == null || osobniPodaci.getEmail().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email ne smije biti prazan!");
+        }
+        if (osobniPodaci.getIme() == null || osobniPodaci.getIme().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ime ne smije biti prazno!");
+        }
+        if (osobniPodaci.getPrezime() == null || osobniPodaci.getPrezime().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Prezime ne smije biti prazno!");
+        }
+        if (osobniPodaci.getAdresa() == null || osobniPodaci.getAdresa().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Adresa ne smije biti prazna!");
+        }
+        if (osobniPodaci.getBroj_telefona() == null || osobniPodaci.getBroj_telefona().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Broj telefona ne smije biti prazan!");
+        }
+        if (osobniPodaciRepository.existsByEmail(osobniPodaci.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email adresa '" + osobniPodaci.getEmail() + "' se već koristi!");
+        }
         
         if (osobniPodaci.getUloga() == null) {
             Uloga ulogaKorisnik = ulogaRepository.findById(1)
@@ -71,8 +96,9 @@ public class OsobniPodaciService {
         }
 
         String rawLozinka = (osobniPodaci.getLozinka() == null || osobniPodaci.getLozinka().isEmpty()) 
-                            ? "privremena123" 
-                            : osobniPodaci.getLozinka();
+                    ? UUID.randomUUID().toString().substring(0, 10) 
+                    : osobniPodaci.getLozinka();
+
         osobniPodaci.setLozinka(passwordEncoder.encode(rawLozinka));
 
         return osobniPodaciRepository.save(osobniPodaci);
